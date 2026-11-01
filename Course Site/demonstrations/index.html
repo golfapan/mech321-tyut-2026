@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive first- and second-order system, zero-effect and Bode-construction demonstrations for MECH321 Dynamics of Engineering Systems.">
+  <title>System Demonstrations · MECH321 TYUT 2026</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%2308172d'/%3E%3Cpath d='M10 40c10-25 15 14 24-12s12 20 20-7' fill='none' stroke='%235de0ce' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to demonstration</a>
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">DS</span><span><strong>MECH321 Dynamics of Engineering Systems</strong><small>TYUT 2026 · Interactive demonstrations</small></span></a>
+    <a class="back-link" href="../index.html">Course home</a>
+  </header>
+
+  <main id="workspace">
+    <section class="demo-heading" aria-labelledby="page-title">
+      <svg class="hero-response" viewBox="0 0 760 220" preserveAspectRatio="none" aria-hidden="true"><path class="hero-axis" d="M0 167 H760 M76 18 V205"></path><path class="hero-setpoint" d="M76 82 H760"></path><path class="hero-curve" d="M76 167 C116 166 126 44 183 50 C230 55 226 111 278 104 C331 97 330 73 382 79 C438 85 435 91 490 86 C554 81 575 82 760 82"></path></svg>
+      <div><p class="eyebrow">Interactive demonstrations · core Lectures 04–08 · optional Lecture 09</p><h1 id="page-title">Dynamic Systems Explorer</h1></div>
+      <p>Connect transfer functions with poles, time response and frequency-domain design.</p>
+    </section>
+
+    <div class="system-tabs" role="tablist" aria-label="System order">
+      <button id="first-tab" type="button" role="tab" aria-controls="first-panel" aria-selected="true">Demo 1 · First-order system</button>
+      <button id="second-tab" type="button" role="tab" aria-controls="second-panel" aria-selected="false">Demo 2 · Second-order system</button>
+      <button id="zero-tab" type="button" role="tab" aria-controls="zero-panel" aria-selected="false">Demo 3 · What a zero changes</button>
+      <button id="builder-tab" type="button" role="tab" aria-controls="builder-panel" aria-selected="false">Demo 4 · How a Bode plot is built</button>
+      <button id="asymptote-tab" type="button" role="tab" aria-controls="asymptote-panel" aria-selected="false">Demo 5 · Bode asymptote builder</button>
+    </div>
+    <p class="feedback-entry"><a href="feedback.html#tracking">Demo 6 · Feedback Explorer</a> · Reference, load and noise signals, gain, saturation and stability margins</p>
+
+    <section id="first-panel" class="system-panel" role="tabpanel" aria-labelledby="first-tab">
+      <div class="model-bar">
+        <div><span>TRANSFER FUNCTION</span><div class="equation" aria-label="G of s equals K divided by tau s plus one"><i>G</i>(<i>s</i>) = <span class="fraction"><b id="f-eq-k">1.00</b><b><span id="f-eq-tau">1.00</span><i>s</i> + 1</b></span></div></div>
+        <p>The pole is <strong id="f-pole-text">−1.00</strong>. Moving it left reduces the time constant and speeds up the response.</p>
+      </div>
+      <div class="demo-layout">
+        <form id="f-controls" class="controls" aria-label="First-order parameters">
+          <p class="entry-instruction">Drag the sliders, or type exact values and confirm.</p>
+          <div class="control-group"><label for="f-gain"><span>Steady-state gain, <i>K</i></span><span class="parameter-entry"><input id="f-gain-entry" aria-label="Type steady-state gain K" type="number" min="0.2" max="3" value="1.00" step="0.05"></span></label><input id="f-gain" type="range" min="0.2" max="3" value="1" step="0.05"></div>
+          <div class="control-group"><label for="f-tau"><span>Time constant, <i>τ</i></span><span class="parameter-entry"><input id="f-tau-entry" aria-label="Type time constant tau" type="number" min="0.1" max="5" value="1.00" step="0.05"><b>s</b></span></label><input id="f-tau" type="range" min="0.1" max="5" value="1" step="0.05"></div>
+          <fieldset><legend>Time-domain input</legend><label><input type="radio" name="f-input" value="step" checked> Unit step</label><label><input type="radio" name="f-input" value="ramp"> Unit ramp</label></fieldset>
+          <div class="control-actions"><button class="apply-button" type="submit">Apply values</button><button class="reset-button" type="button" data-reset="first">Reset</button></div>
+          <p id="f-entry-status" class="entry-status" role="status" aria-live="polite"></p>
+          <p class="control-note">Drag a slider slowly and watch the pole and response move together.</p>
+        </form>
+        <div class="visuals">
+          <div class="metrics" aria-live="polite">
+            <article><span>Time constant</span><strong id="f-metric-tau">1.00 s</strong><small>63.2% of final value</small></article>
+            <article><span>Rise time</span><strong id="f-metric-rise">2.20 s</strong><small>10% to 90%</small></article>
+            <article><span>Settling time</span><strong id="f-metric-settle">3.91 s</strong><small>within ±2%</small></article>
+            <article><span>DC gain</span><strong id="f-metric-gain">1.00</strong><small>step final value</small></article>
+          </div>
+          <div class="plot-grid">
+            <article class="plot-card time-card"><div class="plot-title"><div><span>TIME DOMAIN</span><h2 id="f-time-title">Unit step response</h2></div><div class="legend"><i class="input-line"></i>input <i class="output-line"></i>output</div></div><canvas id="f-time" role="img" aria-label="First-order time response plot"></canvas></article>
+            <article class="plot-card pole-card"><div class="plot-title"><div><span>S-PLANE</span><h2>Pole location</h2></div><b class="pole-chip" id="f-pole-chip">−1.00</b></div><canvas id="f-poles" role="img" aria-label="First-order pole plot"></canvas></article>
+            <article class="plot-card bode-card"><div class="plot-title"><div><span>FREQUENCY DOMAIN</span><h2>Bode diagram</h2></div><b id="f-corner">ωc = 1.00 rad/s</b></div><canvas id="f-bode" role="img" aria-label="First-order Bode magnitude and phase diagram"></canvas></article>
+            <article class="plot-card nyquist-card"><div class="plot-title"><div><span>COMPLEX PLANE</span><h2>Nyquist diagram</h2></div><b>ω: −∞ → ∞</b></div><canvas id="f-nyquist" role="img" aria-label="First-order Nyquist diagram"></canvas></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="second-panel" class="system-panel" role="tabpanel" aria-labelledby="second-tab" hidden>
+      <div class="model-bar">
+        <div><span>TRANSFER FUNCTION</span><div class="equation" aria-label="G of s equals K omega n squared divided by s squared plus two zeta omega n s plus omega n squared"><i>G</i>(<i>s</i>) = <span class="fraction"><b><span id="s-eq-k">1.00</span> × <span id="s-eq-wn-num">2.00</span><sup>2</sup></b><b><i>s</i><sup>2</sup> + 2(<span id="s-eq-zeta">0.40</span>)(<span id="s-eq-wn">2.00</span>)<i>s</i> + <span id="s-eq-wn-den">2.00</span><sup>2</sup></b></span></div></div>
+        <p id="s-model-note">The poles form an underdamped complex pair. Damping controls overshoot while natural frequency sets the time scale.</p>
+      </div>
+      <div class="demo-layout">
+        <form id="s-controls" class="controls" aria-label="Second-order parameters">
+          <p class="entry-instruction">Drag the sliders, or type exact values and confirm.</p>
+          <div class="control-group"><label for="s-gain"><span>Steady-state gain, <i>K</i></span><span class="parameter-entry"><input id="s-gain-entry" aria-label="Type steady-state gain K" type="number" min="0.2" max="3" value="1.00" step="0.05"></span></label><input id="s-gain" type="range" min="0.2" max="3" value="1" step="0.05"></div>
+          <div class="control-group"><label for="s-zeta"><span>Damping ratio, <i>ζ</i></span><span class="parameter-entry"><input id="s-zeta-entry" aria-label="Type damping ratio zeta" type="number" min="0.05" max="2" value="0.40" step="0.01"></span></label><input id="s-zeta" type="range" min="0.05" max="2" value="0.4" step="0.01"></div>
+          <div class="control-group"><label for="s-wn"><span>Natural frequency, <i>ω</i><sub>n</sub></span><span class="parameter-entry"><input id="s-wn-entry" aria-label="Type natural frequency omega n" type="number" min="0.3" max="8" value="2.00" step="0.05"><b>rad/s</b></span></label><input id="s-wn" type="range" min="0.3" max="8" value="2" step="0.05"></div>
+          <fieldset><legend>Time-domain input</legend><label><input type="radio" name="s-input" value="step" checked> Unit step</label><label><input type="radio" name="s-input" value="ramp"> Unit ramp</label></fieldset>
+          <div class="control-actions"><button class="apply-button" type="submit">Apply values</button><button class="reset-button" type="button" data-reset="second">Reset</button></div>
+          <p id="s-entry-status" class="entry-status" role="status" aria-live="polite"></p>
+          <p class="control-note">Try <i>ζ</i> below 1, at 1 and above 1 to compare all damping regimes.</p>
+        </form>
+        <div class="visuals">
+          <div class="metrics" aria-live="polite">
+            <article><span>Damping regime</span><strong id="s-metric-regime">Underdamped</strong><small id="s-metric-regime-note">0 &lt; ζ &lt; 1</small></article>
+            <article><span>Rise time</span><strong id="s-metric-rise">—</strong><small>10% to 90%</small></article>
+            <article><span>Settling time</span><strong id="s-metric-settle">—</strong><small>within ±2%</small></article>
+            <article><span>Overshoot</span><strong id="s-metric-os">25.4%</strong><small id="s-metric-peak">peak at 1.71 s</small></article>
+          </div>
+          <div class="plot-grid">
+            <article class="plot-card time-card"><div class="plot-title"><div><span>TIME DOMAIN</span><h2 id="s-time-title">Unit step response</h2></div><div class="legend"><i class="input-line"></i>input <i class="output-line"></i>output</div></div><canvas id="s-time" role="img" aria-label="Second-order time response plot"></canvas></article>
+            <article class="plot-card pole-card"><div class="plot-title"><div><span>S-PLANE</span><h2>Pole locations</h2></div><b class="pole-chip" id="s-pole-chip">−0.80 ± j1.83</b></div><canvas id="s-poles" role="img" aria-label="Second-order pole plot"></canvas></article>
+            <article class="plot-card bode-card"><div class="plot-title"><div><span>FREQUENCY DOMAIN</span><h2>Bode diagram</h2></div><b id="s-resonance">resonant peak visible</b></div><canvas id="s-bode" role="img" aria-label="Second-order Bode magnitude and phase diagram"></canvas></article>
+            <article class="plot-card nyquist-card"><div class="plot-title"><div><span>COMPLEX PLANE</span><h2>Nyquist diagram</h2></div><b>ω: −∞ → ∞</b></div><canvas id="s-nyquist" role="img" aria-label="Second-order Nyquist diagram"></canvas></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="zero-panel" class="system-panel" role="tabpanel" aria-labelledby="zero-tab" hidden>
+      <div class="model-bar">
+        <div><span>POLES FIXED · ZERO MOVES</span><div class="equation" id="z-transfer"><i>G</i><sub>z</sub>(<i>s</i>) = <span class="fraction"><b><i>Kω</i><sub>n</sub><sup>2</sup>(1 + <i>s</i>/<i>z</i>)</b><b><i>s</i><sup>2</sup> + 2<i>ζω</i><sub>n</sub><i>s</i> + <i>ω</i><sub>n</sub><sup>2</sup></b></span></div></div>
+        <p id="z-model-note">The poles and DC gain stay fixed. A left-half-plane zero changes the modal weights and can increase overshoot.</p>
+      </div>
+      <div class="zero-layout">
+        <aside class="zero-controls" aria-label="Zero effect controls">
+          <fieldset><legend>Zero type</legend><label><input type="radio" name="z-type" value="none"> No zero</label><label><input type="radio" name="z-type" value="lhp" checked> LHP zero</label><label><input type="radio" name="z-type" value="rhp"> RHP zero</label></fieldset>
+          <div class="control-group"><label for="z-ratio"><span>Zero distance, <i>z/ω</i><sub>n</sub></span><span class="parameter-entry"><input id="z-ratio-entry" aria-label="Type zero distance relative to natural frequency" type="number" min="0.5" max="10" value="1.00" step="0.05"><b>×ωn</b></span></label><input id="z-ratio" aria-label="Zero distance relative to natural frequency" type="range" min="-0.30103" max="1" value="0" step="0.01"></div>
+          <button id="z-apply" class="apply-button" type="button">Apply zero</button>
+          <div class="preset-grid" aria-label="Zero presets"><button type="button" data-zero-preset="none">No zero</button><button type="button" data-zero-preset="far">Far LHP</button><button type="button" data-zero-preset="near">Nearby LHP</button><button type="button" data-zero-preset="rhp">RHP zero</button></div>
+          <p class="control-note">The pole pair uses the current <i>K</i>, <i>ζ</i> and <i>ω</i><sub>n</sub> values from Demo 2.</p>
+        </aside>
+        <div class="zero-content">
+          <div class="metrics zero-metrics" aria-live="polite">
+            <article><span>Zero location</span><strong id="z-metric-location">−2.00</strong><small id="z-metric-location-note">left half-plane</small></article>
+            <article><span>Rise time</span><strong id="z-metric-rise">—</strong><small>10% to 90%</small></article>
+            <article><span>Overshoot</span><strong id="z-metric-overshoot">—</strong><small>relative to final value</small></article>
+            <article><span>Undershoot</span><strong id="z-metric-undershoot">—</strong><small>wrong-way motion</small></article>
+            <article><span>Settling time</span><strong id="z-metric-settle">—</strong><small>within ±2%</small></article>
+          </div>
+          <div class="zero-insight"><strong id="z-insight">The poles are unchanged, but the transient changes because the zero changes the modal weights.</strong><span id="z-relation"><i>y</i><sub>z</sub>(<i>t</i>) = <i>y</i><sub>0</sub>(<i>t</i>) + <i>h</i><sub>0</sub>(<i>t</i>)/<i>z</i></span></div>
+          <div class="zero-plots">
+            <article class="plot-card zero-time-card"><div class="plot-title"><div><span>UNIT STEP · NORMALISED BY K</span><h2>Same poles, different response</h2></div><div class="legend zero-legend"><i class="input-line"></i>input <i class="baseline-line"></i>no zero <i class="output-line"></i>with zero</div></div><canvas id="z-time" role="img" aria-label="Comparison of step responses with and without a zero"></canvas></article>
+            <article class="plot-card zero-plane-card"><div class="plot-title"><div><span>S-PLANE</span><h2>Fixed poles and movable zero</h2></div><b id="z-plane-label">zero −2.00</b></div><canvas id="z-plane" role="img" aria-label="Pole-zero diagram for the selected zero"></canvas></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="builder-panel" class="system-panel" role="tabpanel" aria-labelledby="builder-tab" hidden>
+      <div class="model-bar builder-model-bar">
+        <div><span>ONE FREQUENCY AT A TIME</span><div class="equation" id="b-transfer"><i>G</i>(<i>s</i>) = <span class="fraction"><b>1</b><b><i>s</i> + 1</b></span></div></div>
+        <p>Choose one angular frequency. The same complex value <strong><i>G</i>(j<i>ω</i>)</strong> becomes two Bode points and one point on the Nyquist curve.</p>
+      </div>
+      <div class="builder-layout">
+        <aside class="builder-controls" aria-label="Bode construction controls">
+          <fieldset class="builder-model-choice"><legend>Transfer function</legend><label><input type="radio" name="b-model" value="first" checked> First order</label><label><input type="radio" name="b-model" value="second"> Second order</label></fieldset>
+          <div class="control-group"><label for="b-omega"><span>Angular frequency, <i>ω</i></span><span class="parameter-entry"><input id="b-omega-entry" aria-label="Type angular frequency omega" type="number" min="0.01" max="100" value="1.00" step="0.01"><b>rad/s</b></span></label><input id="b-omega" aria-label="Angular frequency on logarithmic scale" type="range" min="-2" max="2" value="0" step="0.01"></div>
+          <button id="b-apply" class="apply-button" type="button">Apply frequency</button>
+          <p class="control-note">The model uses the current parameter values from Demo 1 or Demo 2.</p>
+        </aside>
+        <div class="builder-content">
+          <div class="calculation-strip" aria-live="polite">
+            <article><span>1 · Substitute</span><strong id="b-substitute"><i>s</i> = j1.00</strong></article>
+            <article><span>2 · Complex value</span><strong id="b-complex">0.500 − j0.500</strong></article>
+            <article><span>3 · Magnitude</span><strong id="b-magnitude">0.707 = −3.01 dB</strong></article>
+            <article><span>4 · Phase</span><strong id="b-phase">−45.0°</strong></article>
+          </div>
+          <div class="builder-message"><strong id="b-point-summary">At ω = 1.00 rad/s, this one complex value creates the highlighted Bode and Nyquist points.</strong></div>
+          <div class="builder-plots">
+            <article class="plot-card builder-vector-card"><div class="plot-title"><div><span>COMPLEX VALUE</span><h2>G(jω) as a vector</h2></div><b id="b-vector-label">|G| 0.707 · ∠ −45.0°</b></div><canvas id="b-vector" role="img" aria-label="Complex vector for the selected frequency"></canvas></article>
+            <article class="plot-card builder-bode-card"><div class="plot-title"><div><span>POINT-BY-POINT CONSTRUCTION</span><h2>Corresponding Bode points</h2></div><b id="b-frequency-label">ω = 1.00 rad/s</b></div><canvas id="b-bode" role="img" aria-label="Bode diagram with highlighted magnitude and phase points"></canvas></article>
+          </div>
+          <article class="plot-card builder-nyquist-card"><div class="plot-title"><div><span>SAME FREQUENCY RESPONSE · CARTESIAN VIEW</span><h2>Corresponding Nyquist point</h2></div><div><b id="b-nyquist-label">ω = 1.00 rad/s</b><div class="legend nyquist-legend"><i class="output-line"></i>positive ω <i class="negative-frequency-line"></i>negative ω <i class="selected-point"></i>selected</div></div></div><canvas id="b-nyquist" role="img" aria-label="Nyquist diagram with the selected frequency highlighted"></canvas></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="asymptote-panel" class="system-panel" role="tabpanel" aria-labelledby="asymptote-tab" hidden>
+      <div class="model-bar asymptote-model-bar">
+        <div><span>BUILD THE TRANSFER FUNCTION FACTOR BY FACTOR</span><div class="equation" id="a-transfer"><i>G</i>(<i>s</i>) = 2.00</div></div>
+        <p>Each factor contributes its own magnitude, slope and phase. The total Bode plot is obtained by adding those contributions.</p>
+      </div>
+      <div class="asymptote-layout">
+        <aside id="a-controls" class="asymptote-controls" aria-label="Bode asymptote controls">
+          <label class="asymptote-select-label" for="a-preset">Example</label>
+          <select id="a-preset">
+            <option value="gain">Gain only</option>
+            <option value="integrator">Integrator</option>
+            <option value="differentiator">Differentiator</option>
+            <option value="pole">First-order pole</option>
+            <option value="zero">First-order zero</option>
+            <option value="second">Second-order poles</option>
+            <option value="lead">Lead network</option>
+            <option value="lag">Lag network</option>
+            <option value="pi">PI controller</option>
+            <option value="custom">Custom combination</option>
+          </select>
+          <div class="asymptote-factor gain-factor"><label><span><b>Gain</b><small><i>K</i></small></span><span class="parameter-entry"><input id="a-gain-entry" type="number" min="0.1" max="10" step="0.1" value="2.00" aria-label="Gain K"><b>K</b></span></label><input id="a-gain" type="range" min="-1" max="1" step="0.01" value="0.30103" aria-label="Gain K on logarithmic scale"></div>
+          <div class="factor-switch"><label><input id="a-integrator-on" type="checkbox"> <span><b>Integrator</b><small>1/<i>s</i><sup>n</sup> · −20<i>n</i> dB/dec</small></span></label><select id="a-integrator-order" aria-label="Integrator order"><option value="1">n = 1</option><option value="2">n = 2</option></select></div>
+          <div class="factor-switch"><label><input id="a-differentiator-on" type="checkbox"> <span><b>Differentiator</b><small><i>s</i><sup>m</sup> · +20<i>m</i> dB/dec</small></span></label><select id="a-differentiator-order" aria-label="Differentiator order"><option value="1">m = 1</option><option value="2">m = 2</option></select></div>
+          <div class="factor-switch"><label><input id="a-zero-on" type="checkbox"> <span><b>First-order zero</b><small>1 + <i>s</i>/<i>ω</i><sub>z</sub></small></span></label><span class="parameter-entry"><input id="a-zero-entry" type="number" min="0.1" max="100" step="0.1" value="1.00" aria-label="Zero corner frequency"><b>rad/s</b></span><input id="a-zero" type="range" min="-1" max="2" step="0.01" value="0" aria-label="Zero corner frequency on logarithmic scale"></div>
+          <div class="factor-switch"><label><input id="a-pole-on" type="checkbox"> <span><b>First-order pole</b><small>1/(1 + <i>s</i>/<i>ω</i><sub>p</sub>)</small></span></label><span class="parameter-entry"><input id="a-pole-entry" type="number" min="0.1" max="100" step="0.1" value="10.00" aria-label="Pole corner frequency"><b>rad/s</b></span><input id="a-pole" type="range" min="-1" max="2" step="0.01" value="1" aria-label="Pole corner frequency on logarithmic scale"></div>
+          <div class="factor-switch second-factor"><label><input id="a-second-on" type="checkbox"> <span><b>Second-order poles</b><small><i>ω</i><sub>n</sub>, <i>ζ</i> · −40 dB/dec</small></span></label><div class="double-entry"><span class="parameter-entry"><input id="a-wn-entry" type="number" min="0.1" max="100" step="0.1" value="2.00" aria-label="Natural frequency"><b>ωn</b></span><span class="parameter-entry"><input id="a-zeta-entry" type="number" min="0.1" max="2" step="0.05" value="0.40" aria-label="Damping ratio"><b>ζ</b></span></div><input id="a-wn" type="range" min="-1" max="2" step="0.01" value="0.30103" aria-label="Natural frequency on logarithmic scale"><input id="a-zeta" type="range" min="0.1" max="2" step="0.01" value="0.4" aria-label="Damping ratio"></div>
+          <label class="practice-toggle"><input id="a-show-exact" type="checkbox" checked> Show exact response</label>
+          <p class="control-note">Hide the exact response to practise the Lecture 5 asymptote method, then reveal it to check the sketch.</p>
+        </aside>
+        <div class="asymptote-content">
+          <div class="asymptote-summary" aria-live="polite"><article><span>At ω = 1 rad/s</span><strong id="a-level">6.02 dB</strong><small>asymptote reference level</small></article><article><span>Initial slope</span><strong id="a-initial-slope">0 dB/dec</strong><small>before the first corner</small></article><article><span>Final slope</span><strong id="a-final-slope">0 dB/dec</strong><small>after all corners</small></article><article><span>Corner frequencies</span><strong id="a-corners">none</strong><small>vertical construction lines</small></article></div>
+          <div class="asymptote-rule"><strong id="a-rule">Gain moves the magnitude plot vertically without changing its slope or phase.</strong><span id="a-view-state">Exact response <i>solid</i> · asymptote <i>dashed</i></span></div>
+          <article class="plot-card asymptote-mag-card"><div class="plot-title"><div><span>MAGNITUDE CONSTRUCTION</span><h2>Add slopes at every corner</h2></div><div class="legend"><i class="exact-line"></i>exact <i class="asymptote-line"></i>asymptote</div></div><canvas id="a-magnitude" role="img" aria-label="Bode magnitude exact curve and asymptote"></canvas></article>
+          <article class="plot-card asymptote-phase-card"><div class="plot-title"><div><span>PHASE CONSTRUCTION</span><h2>Add each factor's phase</h2></div><div class="legend"><i class="exact-line"></i>exact <i class="phase-approx-line"></i>straight-line approximation</div></div><canvas id="a-phase" role="img" aria-label="Bode phase exact curve and straight-line approximation"></canvas></article>
+          <div class="slope-table-wrap"><h2>Asymptote slope schedule</h2><table class="slope-table"><thead><tr><th>Frequency range</th><th>Factor encountered</th><th>Slope change</th><th>New total slope</th></tr></thead><tbody id="a-slope-body"></tbody></table></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer><span>MECH321 · Dynamics of Engineering Systems</span><span>Interactive demonstrations · Works offline</span></footer>
+  <script src="demo.js"></script>
+</body>
+</html>

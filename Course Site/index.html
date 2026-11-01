@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Student course hub for MECH321 Dynamics of Engineering Systems lectures, tutorials, home reading and engineering projects.">
+  <title>MECH321 Dynamics of Engineering Systems · TYUT 2026</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%2308172d'/%3E%3Cpath d='M10 40c10-25 15 14 24-12s12 20 20-7' fill='none' stroke='%235de0ce' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+:root { color-scheme:dark; --ink:#07101f; --panel:#0b1b31; --line:rgba(165,202,227,.19); --text:#f4f8fb; --muted:#a9bdd0; --teal:#5de0ce; --amber:#ffb547; --max:1220px; font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; background:var(--ink); }
+body { position:relative; margin:0; overflow-x:hidden; color:var(--text); background:radial-gradient(circle at 86% 1%,rgba(33,113,148,.25),transparent 34rem),radial-gradient(circle at 12% 48%,rgba(35,91,137,.13),transparent 35rem),linear-gradient(180deg,#07101f 0%,#091a2d 48%,#06101e 100%); font-size:16px; line-height:1.55; }
+body::before { content:""; position:absolute; inset:700px 0 0; z-index:0; pointer-events:none; opacity:.24; background:linear-gradient(180deg,rgba(7,16,31,.12),rgba(7,16,31,.34)),url("mech321-bg-transient.png") right -90px top 3%/clamp(560px,58vw,860px) auto no-repeat,url("mech321-bg-bode.png") left -130px top 51%/clamp(560px,58vw,850px) auto no-repeat,url("mech321-bg-nyquist.png") right -110px top 86%/clamp(540px,56vw,820px) auto no-repeat; mask-image:linear-gradient(180deg,transparent 0,#000 4%,#000 94%,transparent 100%); }
+body::after { content:""; position:absolute; inset:700px 0 0; z-index:0; pointer-events:none; opacity:.18; background-image:linear-gradient(rgba(116,176,218,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(116,176,218,.12) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(90deg,transparent 4%,#000 50%,transparent 96%); }
+a { color:inherit; text-decoration:none; }
+.skip-link { position:fixed; top:-5rem; left:1rem; z-index:30; padding:.7rem 1rem; background:var(--teal); color:var(--ink); border-radius:.5rem; font-weight:800; }
+.skip-link:focus { top:1rem; }
+.topbar { position:sticky; top:0; z-index:20; min-height:76px; display:flex; align-items:center; justify-content:space-between; gap:2rem; padding:.75rem max(1.5rem,calc((100vw - var(--max))/2)); background:rgba(7,16,31,.9); border-bottom:1px solid var(--line); backdrop-filter:blur(18px); }
+.brand { display:flex; align-items:center; gap:.8rem; }
+.brand-mark { display:grid; place-items:center; width:44px; height:44px; border:1px solid rgba(93,224,206,.5); border-radius:12px; color:var(--teal); font-weight:900; background:linear-gradient(145deg,rgba(93,224,206,.16),transparent); }
+.brand strong,.brand small { display:block; }
+.brand strong { font-size:.96rem; }
+.brand small { color:var(--muted); font-size:.76rem; }
+nav { display:flex; gap:.25rem; }
+nav a { padding:.6rem .85rem; border-radius:.55rem; color:#cbd8e4; font-size:.9rem; }
+nav a:hover,nav a:focus-visible { color:#fff; background:rgba(255,255,255,.07); outline:none; }
+main,footer { position:relative; z-index:1; width:min(calc(100% - 3rem),var(--max)); margin-inline:auto; }
+.intro { position:relative; width:100vw; margin-inline:calc(50% - 50vw); padding:0; }
+.visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.eyebrow,.section-kicker { margin:0 0 .65rem; color:var(--teal); font-size:.76rem; font-weight:800; letter-spacing:.15em; text-transform:uppercase; }
+.intro .eyebrow { margin-bottom:1rem; font-size:1.05rem; letter-spacing:.18em; }
+h1 { margin:0; white-space:normal; font-size:clamp(3rem,4.4vw,4.35rem); line-height:1.06; letter-spacing:-.065em; }
+.intro-visual { margin:0; overflow:hidden; background:#031126; }
+.intro-visual img { display:block; width:100%; height:auto; }
+.section-block { padding:5.5rem 0 1rem; scroll-margin-top:72px; }
+.section-heading { display:flex; align-items:end; justify-content:space-between; gap:2rem; margin-bottom:1.5rem; }
+h2 { margin:0; font-size:clamp(2rem,4vw,3.4rem); line-height:1; letter-spacing:-.045em; }
+.section-heading>p { max-width:520px; margin:0; color:var(--muted); }
+.week-grid { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); border-left:1px solid var(--line); }
+.week-card { --accent:var(--teal); position:relative; min-height:355px; padding:1.35rem; display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--line); border-bottom:1px solid var(--line); background:linear-gradient(150deg,rgba(18,46,76,.82),rgba(8,24,43,.78)); transition:transform .22s ease,background .22s ease; }
+.week-card::after { content:""; position:absolute; width:160px; height:160px; right:-70px; top:-70px; border:1px solid color-mix(in srgb,var(--accent) 45%,transparent); border-radius:50%; box-shadow:0 0 0 28px color-mix(in srgb,var(--accent) 5%,transparent),0 0 0 58px color-mix(in srgb,var(--accent) 3%,transparent); }
+.week-card:hover { transform:translateY(-4px); z-index:2; background:linear-gradient(150deg,rgba(24,58,92,.95),rgba(10,28,49,.95)); }
+.week-card.c2,.week-card.c7 { --accent:#6aa9ff; }
+.week-card.c3,.week-card.c8 { --accent:#9c84ff; }
+.week-card.c4,.week-card.c9 { --accent:#ffb547; }
+.week-card.c5,.week-card.c10 { --accent:#ff7a79; }
+.week-card.optional-week { --accent:#8c9baa; background:linear-gradient(150deg,rgba(30,39,51,.86),rgba(17,26,38,.82)); }
+.week-card.optional-week:hover { background:linear-gradient(150deg,rgba(40,51,64,.94),rgba(22,32,44,.92)); }
+.week-card.optional-week::after { border-color:rgba(140,155,170,.22); box-shadow:0 0 0 28px rgba(140,155,170,.025),0 0 0 58px rgba(140,155,170,.015); }
+.week-card.optional-week>p { display:flex; align-items:baseline; gap:.75rem; color:#aab6c1; }
+.week-card.optional-week .optional-label { color:#c7d0d8; font-size:1rem; font-weight:800; letter-spacing:.055em; }
+.week-card.optional-week h3 { color:#e1e7ec; }
+.week-card.optional-week>span,.week-card.optional-week .lecture-meta,.week-card.optional-week .card-links a { color:#aebbc6; }
+.week-card.optional-week .card-links .primary-link { color:#e1e7ec; }
+.week-number { color:var(--accent); font:800 2.45rem/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:-.09em; }
+.week-card>p { margin:1.65rem 0 .2rem; color:var(--accent); font-size:.69rem; font-weight:900; letter-spacing:.14em; }
+.week-card h3 { margin:0 0 .5rem; max-width:95%; font-size:1.35rem; line-height:1.12; letter-spacing:-.025em; }
+.week-card>span { color:var(--muted); font-size:.86rem; }
+.lecture-meta { margin-top:.65rem; color:#d1e0eb; font-size:.8rem; font-weight:650; font-variant-numeric:tabular-nums; }
+.card-links { display:grid; grid-template-columns:1fr 1fr; gap:.55rem 1rem; margin-top:auto; padding-top:1.2rem; }
+.card-links a { color:var(--muted); font-size:.8rem; }
+.card-links a.solution-link { color:var(--teal); font-weight:700; }
+.card-links .video-slot { color:#71879a; font-size:.8rem; }
+.card-links a.video-link { color:var(--accent); font-weight:750; }
+.card-links .primary-link { grid-column:1/-1; color:#fff; font-size:.94rem; font-weight:750; }
+.primary-link b { color:var(--accent); margin-left:.25rem; }
+.project-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+.project-grid article { min-height:270px; padding:1.5rem; display:flex; flex-direction:column; border-radius:1rem; background:#f2f6f7; color:#0b2031; }
+.project-grid span { color:#087f78; font:800 .8rem ui-monospace,monospace; }
+.project-grid h3 { margin:2rem 0 .5rem; font-size:1.35rem; }
+.project-grid p { margin:0; color:#4d6473; }
+.project-grid a { margin-top:auto; padding-top:1.5rem; color:#057d76; font-weight:750; }
+.project-note { color:var(--muted); font-size:.84rem; }
+.section-block#demonstrations { position:relative; isolation:isolate; overflow:hidden; margin-top:4.5rem; padding:3.2rem clamp(1.3rem,4vw,3.2rem) 2.7rem; border:1px solid rgba(126,190,225,.24); border-radius:1.35rem; background:linear-gradient(90deg,rgba(6,20,36,.98) 0%,rgba(7,25,45,.94) 42%,rgba(7,22,39,.48) 74%,rgba(7,20,36,.2) 100%),url("mech321-bg-bode.png") right center/cover no-repeat; box-shadow:0 26px 70px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.04); }
+.section-block#demonstrations::after { content:""; position:absolute; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(circle at 78% 42%,rgba(93,224,206,.13),transparent 26%),linear-gradient(120deg,transparent 58%,rgba(72,145,194,.14)); }
+.section-block#demonstrations .section-heading { max-width:850px; }
+.demo-feature { position:relative; min-height:0; display:inline-block; overflow:hidden; border:1px solid rgba(139,224,235,.44); border-bottom-color:rgba(21,56,78,.92); border-radius:1rem; background:linear-gradient(155deg,rgba(28,76,108,.98) 0%,rgba(13,43,70,.98) 46%,rgba(6,24,43,.99) 100%); box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.5),0 7px 0 #03111f,0 13px 28px rgba(0,0,0,.35); cursor:pointer; transform:translateY(0); transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,filter .16s ease; }
+.demo-feature::before { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(115deg,rgba(255,255,255,.12),transparent 31%),radial-gradient(circle at 88% 22%,rgba(93,224,206,.2),transparent 26%); opacity:.8; transition:opacity .16s ease; }
+.demo-feature:hover { transform:translateY(-4px); border-color:rgba(128,244,228,.78); box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.45),0 11px 0 #03111f,0 19px 36px rgba(0,0,0,.42),0 0 24px rgba(93,224,206,.12); filter:brightness(1.07); }
+.demo-feature:hover::before { opacity:1; }
+.demo-feature:active { transform:translateY(5px); box-shadow:inset 0 2px 5px rgba(0,0,0,.42),inset 0 -1px 0 rgba(255,255,255,.1),0 2px 0 #03111f,0 7px 16px rgba(0,0,0,.3); filter:brightness(.96); }
+.demo-feature:focus-visible { outline:3px solid var(--amber); outline-offset:7px; border-color:rgba(255,255,255,.72); }
+.demo-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:1fr; gap:1.25rem; padding-bottom:.7rem; }
+.demo-links .demo-feature { display:flex; align-items:center; min-height:92px; }
+@media(max-width:700px) { .demo-links { grid-template-columns:1fr; } }
+.demo-feature-copy { position:relative; z-index:1; padding:1.2rem 1.5rem; display:flex; flex-direction:column; align-items:flex-start; }
+.demo-feature-copy>span { color:var(--teal); font-size:.72rem; font-weight:850; letter-spacing:.14em; }
+.demo-feature-copy h3 { margin:0; font-size:clamp(1.25rem,2.2vw,1.6rem); line-height:1.08; letter-spacing:-.035em; }
+.demo-feature-copy p { max-width:660px; margin:0; color:var(--muted); }
+.demo-feature-copy strong { padding-top:1rem; }
+.demo-feature-copy strong b { color:var(--teal); margin-left:.25rem; }
+.resources-block { display:grid; grid-template-columns:.65fr 1.35fr; gap:2rem; }
+.resource-grid { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+.resource-grid a { min-height:110px; padding:1rem; display:flex; flex-direction:column; justify-content:end; border:1px solid var(--line); border-radius:.8rem; background:var(--panel); }
+.resource-grid a:hover { border-color:rgba(93,224,206,.55); }
+.resource-grid b { font-size:.92rem; }
+.resource-grid span { color:var(--muted); font-size:.77rem; }
+footer { display:grid; grid-template-columns:auto 1fr auto; gap:1.5rem; align-items:center; margin-top:6rem; padding:2rem 0 3rem; border-top:1px solid var(--line); color:var(--muted); font-size:.82rem; }
+footer p { margin:0; text-align:center; }
+footer code { color:#d9e7ef; }
+footer>a { color:var(--teal); font-weight:750; }
+:focus-visible { outline:3px solid var(--amber); outline-offset:3px; }
+.open-status { position:fixed; right:24px; bottom:24px; z-index:1000; max-width:min(420px,calc(100vw - 48px)); padding:13px 17px; border-radius:12px; background:#163c53; color:#fff; box-shadow:0 12px 32px rgba(11,35,49,.28); opacity:0; transform:translateY(12px); pointer-events:none; transition:opacity 160ms ease,transform 160ms ease; }
+.open-status.is-visible { opacity:1; transform:translateY(0); }
+.open-status.is-error { background:#8b2d25; }
+@media(max-width:900px) {
+  .topbar nav { display:none; }
+  .week-grid { grid-template-columns:1fr 1fr; }
+  .project-grid,.resources-block { grid-template-columns:1fr; }
+}
+@media(max-width:600px) {
+  body::before { top:500px; opacity:.14; background-position:0 0,right -260px top 4%,left -270px top 52%,right -250px top 88%; background-size:auto,720px auto,700px auto,700px auto; }
+  body::after { top:500px; opacity:.1; }
+  main,footer { width:min(calc(100% - 2rem),var(--max)); }
+  .topbar { padding-inline:1rem; }
+  h1 { font-size:clamp(2.35rem,11vw,3.2rem); }
+  .section-heading { align-items:start; flex-direction:column; }
+  .section-block#demonstrations { margin-top:3.5rem; padding:2.4rem 1.25rem 2rem; background:linear-gradient(180deg,rgba(6,20,36,.93),rgba(7,22,39,.78)),url("mech321-bg-bode.png") 68% center/auto 115% no-repeat; }
+  .week-grid,.resource-grid { grid-template-columns:1fr; }
+  .week-card { min-height:330px; }
+  footer { grid-template-columns:1fr; text-align:left; }
+  footer p { text-align:left; }
+}
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .week-card { transition:none; } }
+@media(prefers-reduced-motion:reduce) { .demo-feature { transition:none; } }
+
+
+/* Local video playback controls */
+.video-player { min-width:0; overflow:hidden; background:#000; }
+.video-player video { display:block; width:100%; }
+.video-tools { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:.45rem; min-height:40px; padding:.38rem .55rem; background:#102131; color:#eef7f7; font-size:.76rem; }
+.video-tools button, .video-tools select { min-height:29px; border:1px solid rgba(255,255,255,.22); border-radius:.4rem; background:#20384a; color:#fff; font:inherit; cursor:pointer; }
+.video-tools button { padding:0 .62rem; font-weight:750; }
+.video-tools select { padding:0 1.55rem 0 .5rem; }
+.video-tools button:hover, .video-tools select:hover { border-color:rgba(255,255,255,.58); }
+.video-tools button:focus-visible, .video-tools select:focus-visible { outline:2px solid #5de0ce; outline-offset:2px; }
+.lab-block .video-player { display:flex; flex-direction:column; border-radius:1rem; }
+.lab-block .video-player video { flex:1; border-radius:0; }
+body.video-open { overflow:hidden; }
+.video-overlay[hidden] { display:none; }
+.video-overlay { position:fixed; inset:0; z-index:2000; display:grid; place-items:center; padding:clamp(1rem,4vw,3rem); background:rgba(4,15,25,.86); backdrop-filter:blur(8px); }
+.video-overlay-panel { position:relative; width:min(1100px,100%); max-height:calc(100vh - 2rem); overflow:auto; padding:3.4rem 1rem 1rem; border:1px solid rgba(255,255,255,.18); border-radius:1rem; background:#0d1d2c; box-shadow:0 28px 90px rgba(0,0,0,.45); }
+.video-overlay-title { margin:0 7rem 1rem 0; color:#fff; font-size:clamp(1.1rem,2.4vw,1.65rem); }
+.video-overlay-close { position:absolute; top:1rem; right:1rem; min-height:34px; padding:0 .85rem; border:1px solid rgba(255,255,255,.25); border-radius:.45rem; background:#20384a; color:#fff; cursor:pointer; }
+.video-overlay-holder video { width:100%; max-height:calc(100vh - 13rem); aspect-ratio:16/9; background:#000; }
+@media(max-width:600px) {
+  .video-overlay { padding:.5rem; }
+  .video-overlay-panel { padding:3.2rem .6rem .6rem; }
+  .video-overlay-title { margin-right:5rem; }
+  .video-tools { justify-content:flex-start; }
+}
+
+
+/* Student-edition access boundary */
+.resource-grid .disabled-resource {
+  min-height:110px; padding:1rem; display:flex; flex-direction:column;
+  justify-content:end; border:1px solid rgba(165,202,227,.11);
+  border-radius:.8rem; background:rgba(22,31,43,.72); color:#7f91a1;
+  cursor:not-allowed;
+}
+.resource-grid .disabled-resource b { font-size:.92rem; color:#91a0ad; }
+.resource-grid .disabled-resource span { color:#71808d; font-size:.77rem; }
+.guide-intro { max-width:820px; color:var(--muted); font-size:1.05rem; }
+.guide-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin-top:2rem; }
+.guide-card { min-height:220px; padding:1.5rem; border:1px solid var(--line); border-radius:1rem; background:linear-gradient(150deg,rgba(18,46,76,.82),rgba(8,24,43,.78)); }
+.guide-card .step { color:var(--teal); font:800 .8rem ui-monospace,monospace; letter-spacing:.12em; }
+.guide-card h3 { margin:1.5rem 0 .55rem; font-size:1.35rem; }
+.guide-card p { margin:0; color:var(--muted); }
+.route-grid { display:grid; grid-template-columns:1.15fr 1fr .8fr; margin-top:1rem; border:1px solid var(--line); border-radius:1rem; overflow:hidden; }
+.route-grid article { padding:1.2rem; border-right:1px solid var(--line); background:var(--panel); }
+.route-grid article:last-child { border-right:0; }
+.route-grid h3 { margin:0 0 .35rem; font-size:1rem; }
+.route-grid p { margin:0; color:var(--muted); font-size:.86rem; }
+@media(max-width:700px) { .guide-grid,.route-grid { grid-template-columns:1fr; } .route-grid article { border-right:0; border-bottom:1px solid var(--line); } .route-grid article:last-child { border-bottom:0; } }
+
+
+/* Current course assessment */
+.assessment-table { width:100%; max-width:720px; border-collapse:collapse; margin:1rem 0; }
+.assessment-table th,.assessment-table td { padding:.6rem .8rem; text-align:left; border-bottom:1px solid var(--line); }
+.assessment-table th { color:var(--teal); }
+.assessment-table td:last-child,.assessment-table th:last-child { text-align:right; white-space:nowrap; }
+.assessment-rule { max-width:85ch; color:var(--muted); }
+</style>
+</head>
+<body data-edition="student">
+  <a class="skip-link" href="#weeks">Skip to weekly materials</a>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="MECH321 home"><span class="brand-mark" aria-hidden="true">DS</span><span><strong>MECH321 Dynamics of Engineering Systems</strong><small>Student edition · PDF course materials</small></span></a>
+    <nav aria-label="Course sections"><a href="#weeks">Weekly content</a><a href="#demonstrations">Dynamic System Explorer</a><a href="#projects">Projects</a><a href="#resources">Student resources</a></nav>
+  </header>
+  <main id="top">
+    <section class="intro" aria-labelledby="course-title">
+      <h1 id="course-title" class="visually-hidden">MECH321 Dynamics of Engineering Systems · TYUT 2026</h1>
+      <figure class="intro-visual"><img src="mech321-home-cover.png" width="1916" height="821" fetchpriority="high" alt="MECH321 Dynamics of Engineering Systems, TYUT 2026. A dark blue pole-zero landscape with glowing red poles and cyan zeros."></figure>
+    </section>
+    <section id="weeks" class="section-block" aria-labelledby="weeks-title">
+      <div class="section-heading"><div><p class="section-kicker">Teaching sequence</p><h2 id="weeks-title">Weekly content</h2></div><p>Student edition: each class links to lecture slides, tutorial questions and home reading as PDF files. Classes 9–10 are optional extensions.</p></div>
+      <div class="week-grid">
+        <article class="week-card c1"><div class="week-number">01</div><p>MODELLING</p><h3>Introduction</h3><span>States and model order, mechanical modelling, cross-domain examples and project introductions</span><div class="lecture-meta">32 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2001%20Introduction%20to%20Dynamic%20System.pdf" title="Lecture 01 — Introduction" aria-label="Lecture 01 — Introduction">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%201.pdf" title="Tutorial 01 — Introduction" aria-label="Tutorial 01 — Introduction">Tutorial</a><a href="../Home%20Reading/Home%20Reading%201.pdf" title="Home Reading 01 — Introduction" aria-label="Home Reading 01 — Introduction">Home reading</a></div></article>
+<article class="week-card c2"><div class="week-number">02</div><p>LAPLACE</p><h3>Laplace Transform</h3><span>Forward and inverse transforms, detailed property examples, and one complete damped spring–mass example</span><div class="lecture-meta">30 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2002%20Laplace%20Transform%20from%20ODE%20to%20Algebra.pdf" title="Lecture 02 — Laplace Transform" aria-label="Lecture 02 — Laplace Transform">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%202.pdf" title="Tutorial 02 — Laplace Transform" aria-label="Tutorial 02 — Laplace Transform">Tutorial</a><a href="../Home%20Reading/Home%20Reading%202.pdf" title="Home Reading 02 — Laplace Transform" aria-label="Home Reading 02 — Laplace Transform">Home reading</a></div></article>
+        <article class="week-card c2 supplemental"><div class="week-number">02A</div><p>INVERSE LAPLACE · SUPPORT</p><h3>Partial Fractions</h3><span>Required self-study for Tutorial 2 inverse transforms</span><div class="lecture-meta">7 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2002A%20Partial%20Fractions.pdf">Open slides <b>↗</b></a></div></article>
+<article class="week-card c3"><div class="week-number">03</div><p>REPRESENTATION</p><h3>Transfer Functions</h3><span>Transfer functions, block diagrams, poles, zeros and input responses</span><div class="lecture-meta">28 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2003%20From%20ODE%20to%20Transfer%20Function.pdf" title="Lecture 03 — Transfer Functions" aria-label="Lecture 03 — Transfer Functions">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%203.pdf" title="Tutorial 03 — Transfer Functions" aria-label="Tutorial 03 — Transfer Functions">Tutorial</a><a href="../Home%20Reading/Home%20Reading%203.pdf" title="Home Reading 03 — Transfer Functions" aria-label="Home Reading 03 — Transfer Functions">Home reading</a></div></article>
+        <article class="week-card c4"><div class="week-number">04</div><p>TIME RESPONSE</p><h3>Transient Response</h3><span>Step and ramp responses, second-order transients and identification</span><div class="lecture-meta">26 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2004%20Predicting%20Transient%20Behaviour.pdf" title="Lecture 04 — Transient Response" aria-label="Lecture 04 — Transient Response">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%204.pdf" title="Tutorial 04 — Transient Response" aria-label="Tutorial 04 — Transient Response">Tutorial</a><a href="../Home%20Reading/Home%20Reading%204.pdf" title="Home Reading 04 — Transient Response" aria-label="Home Reading 04 — Transient Response">Home reading</a></div></article>
+        <article class="week-card c5"><div class="week-number">05</div><p>FREQUENCY RESPONSE</p><h3>Frequency Response</h3><span>Bode curves, resonance, sweep identification and suspension evidence</span><div class="lecture-meta">29 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2005%20Frequency%20Response%20Validation%20and%20Suspension%20Decision.pdf" title="Lecture 05 — Frequency Response" aria-label="Lecture 05 — Frequency Response">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%205.pdf" title="Tutorial 05 — Frequency Response" aria-label="Tutorial 05 — Frequency Response">Tutorial</a><a href="../Home%20Reading/Home%20Reading%205.pdf" title="Home Reading 05 — Frequency Response" aria-label="Home Reading 05 — Frequency Response">Home reading</a></div></article>
+        <article class="week-card c6"><div class="week-number">06</div><p>ACTUATOR MODEL</p><h3>Physical Modelling and State Space</h3><span>RC and RLC circuit models, complex impedance, mechanical–electrical analogy, DC motor reduction and a dedicated state-space section</span><div class="lecture-meta">27 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2006%20Robot%20Joint%20Actuator%20Modelling%20and%20State%20Representation.pdf" title="Lecture 06 — Physical Modelling and State Space" aria-label="Lecture 06 — Physical Modelling and State Space">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%206.pdf" title="Tutorial 06 — Physical Modelling and State Space" aria-label="Tutorial 06 — Physical Modelling and State Space">Tutorial</a><a href="../Home%20Reading/Home%20Reading%206.pdf" title="Home Reading 06 — Physical Modelling and State Space" aria-label="Home Reading 06 — Physical Modelling and State Space">Home reading</a></div></article>
+        <article class="week-card c7"><div class="week-number">07</div><p>FEEDBACK</p><h3>Feedback</h3><span>Tracking, disturbance rejection, sensitivity and proportional limits</span><div class="lecture-meta">28 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2007%20What%20Feedback%20Changes.pdf" title="Lecture 07 — Feedback" aria-label="Lecture 07 — Feedback">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%207.pdf" title="Tutorial 07 — Feedback" aria-label="Tutorial 07 — Feedback">Tutorial</a><a href="../Home%20Reading/Home%20Reading%207.pdf" title="Home Reading 07 — Feedback" aria-label="Home Reading 07 — Feedback">Home reading</a></div></article>
+        <article class="week-card c8"><div class="week-number">08</div><p>STABILITY</p><h3>Nyquist Stability and Margins</h3><span>Nyquist count, stability margins and delay</span><div class="lecture-meta">26 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2008%20Stability%2C%20Nyquist%20Interpretation%20and%20Unstable%20Systems.pdf" title="Lecture 08 — Nyquist Stability and Margins" aria-label="Lecture 08 — Nyquist Stability and Margins">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%208.pdf" title="Tutorial 08" aria-label="Tutorial 08">Tutorial</a><a href="../Home%20Reading/Home%20Reading%208.pdf" title="Home Reading 08" aria-label="Home Reading 08">Home reading</a></div></article>
+        <article class="week-card c9 optional-week"><div class="week-number">09</div><p>ROOT LOCUS <strong class="optional-label">OPTIONAL</strong></p><h3>Root Locus and Robustness</h3><span>Gain-dependent poles, response, uncertainty and actuator limits</span><div class="lecture-meta">29 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2009%20Root%20Locus%2C%20Gain%20and%20Robustness.pdf" title="Lecture 09 — Root Locus and Robustness" aria-label="Lecture 09 — Root Locus and Robustness">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%209.pdf" title="Tutorial 09" aria-label="Tutorial 09">Tutorial</a><a href="../Home%20Reading/Home%20Reading%209.pdf" title="Home Reading 09" aria-label="Home Reading 09">Home reading</a></div></article>
+        <article class="week-card c10 optional-week"><div class="week-number">10</div><p>PID CONTROL <strong class="optional-label">OPTIONAL</strong></p><h3>PID Control</h3><span>Controller comparison, saturation, windup and implementation</span><div class="lecture-meta">31 PDF pages</div><div class="card-links"><a class="primary-link" href="../Lecture/Lecture%2010%20P%2C%20PI%2C%20PID%20and%20the%20Integrated%20Engineering%20Decision.pdf" title="Lecture 10 — PID Control" aria-label="Lecture 10 — PID Control">Open slides <b>↗</b></a><a href="../Tutorial/Tutorial%2010.pdf" title="Tutorial 10" aria-label="Tutorial 10">Tutorial</a><a href="../Home%20Reading/Home%20Reading%2010.pdf" title="Home Reading 10" aria-label="Home Reading 10">Home reading</a></div></article>
+              </div>
+    </section>
+    <section id="demonstrations" class="section-block" aria-labelledby="demonstrations-title">
+      <div class="section-heading"><div><p class="section-kicker">Interactive learning</p><h2 id="demonstrations-title">Dynamic System Explorer</h2></div><p>Move the system parameters and connect pole locations with time and frequency response.</p></div>
+      <div class="demo-links">
+        <a class="demo-feature" href="dynamic-system-explorer.html" target="_blank" rel="noopener">
+          <div class="demo-feature-copy"><h3>Live Demo · Lectures 4–6</h3></div>
+        </a>
+        <a class="demo-feature" href="feedback-explorer.html#tracking" target="_blank" rel="noopener">
+          <div class="demo-feature-copy"><h3>Feedback Explorer · core Lectures 7–8, optional 9</h3></div>
+        </a>
+      </div>
+    </section>
+    <section id="assessment" class="section-block" aria-labelledby="assessment-title">
+      <div class="section-heading"><div><p class="section-kicker">Assessment</p><h2 id="assessment-title">Course assessment</h2></div></div>
+      <table class="assessment-table"><thead><tr><th scope="col">Component</th><th scope="col">Course weighting</th></tr></thead><tbody>
+        <tr><td>Project 1</td><td>16%</td></tr>
+        <tr><td>Project 2</td><td>16%</td></tr>
+        <tr><td>Tutorial 1–8 submissions (1% each)</td><td>8%</td></tr>
+        <tr><td>Final examination</td><td>60%</td></tr>
+        <tr><th scope="row">Total</th><td><strong>100%</strong></td></tr>
+      </tbody></table>
+      <p class="assessment-rule"><strong>Tutorial credit:</strong> each submitted Tutorial with a substantive attempt earns 1 percentage point, regardless of correctness. No credit is given for a missing or blank submission or copied question text only. All eight count; no scores are dropped. Tutorials 9–10 are optional and carry no submission credit.</p>
+      <p class="assessment-rule">Each project is marked out of 100 and contributes its score × 0.16 to the course total. Project 2 retains up to 10 optional bonus marks, capped at a project score of 100. The Practice Exam is preparation only and does not count towards the course grade.</p>
+    </section>
+    <section id="projects" class="section-block" aria-labelledby="projects-title">
+      <div class="section-heading"><div><p class="section-kicker">Applied assessment</p><h2 id="projects-title">Engineering projects</h2></div><p>Use the brief and MATLAB files from the same project folder.</p></div>
+      <div class="project-grid">
+        <article><span>01</span><h3>Vehicle Seat Suspension</h3><p>Build a seat model from a four-wheel vehicle, component masses and spring connections, then test the design.</p><a href="../Project/Project%201/Project%2001%20Vehicle%20Seat%20Suspension.pdf">Open project PDF ↗</a><a href="../Project/Project%201.zip" download>Download project and MATLAB files ↗</a></article>
+        <article><span>02</span><h3>DC Motor Speed Control</h3><p>Model the actuator, analyse the stated P feedback and Nyquist stability, then judge voltage and load feasibility. The project ends after core Class 8.</p><a href="../Project/Project%202/Project%2002%20DC%20Motor%20Speed%20Control.pdf">Open project PDF ↗</a><a href="../Project/Project%202.zip" download>Download project and MATLAB files ↗</a></article>
+      </div>
+      <p class="project-note">Both projects are individual assessed briefs with staged milestones. Use the student briefs and submit the evidence requested by your teacher.</p>
+    </section>
+    <section id="resources" class="section-block resources-block" aria-labelledby="resources-title">
+      <div><p class="section-kicker">Documents</p><h2 id="resources-title">Student resources</h2></div>
+      <div class="resource-grid">
+        <a href="student-learning-guide.html"><b>Student learning guide</b><span>How to prepare before class and use the weekly materials</span></a>
+        <a href="../Project/MECH321%20Python%20Installation%20and%20Setup%20Guide.pdf"><b>Optional Python setup guide</b><span>PDF · alternative tools; projects use MATLAB</span></a>
+        <a href="../Lecture/Laplace%20Transform%20Table.pdf"><b>Laplace transform table</b><span>PDF · forward and inverse pairs, properties and conditions</span></a>
+        <a href="../Assessment/Practice%20Exam.pdf"><b>Practice Exam</b><span>PDF · Lectures 1–8 · questions only</span></a><a href="../Project/Project%201/MATLAB%20Starter%20Guide%20Project%201%20Task%201.2.pdf"><b>MATLAB starter guide</b><span>Project 1 · Stage 1 Questions 6–7</span></a><a href="../Code/Lecture%20MATLAB%20examples.zip" download><b>MATLAB lecture examples</b><span>10 worked demonstrations · scripts ZIP</span></a>
+      </div>
+    </section>
+  </main>
+  <footer><strong>MECH321 Dynamics of Engineering Systems</strong><p>TYUT 2026 student edition · Portable PDF course pack</p><a href="#top">Back to top ↑</a></footer>
+</body>
+</html>
