@@ -1,0 +1,650 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body><title>From ODE to Controller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one vertical flow as the hero, then the tools that move you along it,
+   then what each of the two readings of G(s) actually shows. Amber marks the
+   road the course travels; grey marks the branch it opens once and leaves. */
+:root{
+  --paper:#EDF1F3; --panel:#FFFFFF; --panel2:#F6F8F9;
+  --ink:#14202B; --ink2:#46596A; --ink3:#7B8C9A;
+  --line:#AFBECA; --line-soft:#D4DDE3;
+  --road:#A85D0A; --road-wash:#FBF1E2; --on-road:#FFFFFF;
+  --aside:#7D909E; --aside-wash:#E7ECEF;
+  --time:#1F5F80; --time-wash:#E6EFF4;
+  --freq:#2A7362; --freq-wash:#E6F1ED;
+  --disp:"IBM Plex Sans Condensed","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --sans:"IBM Plex Sans","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#0E1419; --panel:#161F27; --panel2:#131B22;
+  --ink:#E2E9EE; --ink2:#A2B3C0; --ink3:#73879A;
+  --line:#3A4A55; --line-soft:#263139;
+  --road:#E3A04F; --road-wash:#2A2014; --on-road:#241804;
+  --aside:#8094A2; --aside-wash:#1A2128;
+  --time:#6FB3D4; --time-wash:#122530;
+  --freq:#6FBFA6; --freq-wash:#102520;
+  color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --paper:#0E1419; --panel:#161F27; --panel2:#131B22;
+  --ink:#E2E9EE; --ink2:#A2B3C0; --ink3:#73879A;
+  --line:#3A4A55; --line-soft:#263139;
+  --road:#E3A04F; --road-wash:#2A2014; --on-road:#241804;
+  --aside:#8094A2; --aside-wash:#1A2128;
+  --time:#6FB3D4; --time-wash:#122530;
+  --freq:#6FBFA6; --freq-wash:#102520;
+  color-scheme:dark; }
+
+*{box-sizing:border-box}
+/* IBM Plex Mono draws 0 with a centre dot, which reads as a theta in dynamics
+   notation. Numbers containing a zero are set in IBM Plex Sans instead. */
+.z{font-family:var(--sans);font-variant-numeric:tabular-nums;letter-spacing:0}
+/* Lecture chips. One solid amber chip marks a core lecture; an outlined grey
+   chip marks the two optional extensions. Same vocabulary in the diagram,
+   the tool cards, the comparison table and the lecture rail. */
+.lx{display:inline-block;font-family:var(--mono);font-weight:500;font-size:11px;
+    line-height:1;letter-spacing:.03em;padding:4px 6px 3px;border-radius:3px;
+    background:var(--road);color:var(--on-road);text-transform:none;
+    vertical-align:.1em;white-space:nowrap}
+.lx.opt{background:transparent;color:var(--aside);box-shadow:inset 0 0 0 1.2px var(--aside)}
+.chiplegend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px;
+            color:var(--ink3);font-size:12.5px}
+.chiplegend b{color:var(--ink2);font-weight:400}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+     font-size:14.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{padding-inline:20px;padding-block:30px 60px;max-width:1120px;margin:0 auto}
+
+header{border-bottom:2px solid var(--ink);padding-bottom:16px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+         color:var(--road)}
+h1{font-family:var(--disp);font-weight:600;font-size:clamp(30px,5.6vw,46px);margin:6px 0 0;
+   letter-spacing:-.01em;line-height:1.05;text-wrap:balance}
+.thesis{color:var(--ink2);margin:10px 0 0;max-width:68ch;font-size:15px}
+.thesis b{color:var(--ink);font-weight:500}
+
+h2{font-family:var(--disp);font-weight:600;font-size:22px;margin:46px 0 2px;letter-spacing:-.005em}
+h2 .zh{font-family:var(--sans);font-weight:400;font-size:13px;color:var(--ink3);margin-left:10px}
+.lede{color:var(--ink2);font-size:13.5px;margin:4px 0 16px;max-width:74ch}
+
+figure{margin:22px 0 0}
+.scroll{overflow-x:auto;border:1px solid var(--line);background:var(--panel);
+        border-radius:2px;padding:10px 6px}
+.scroll svg{display:block;min-width:860px;width:100%;height:auto}
+#ah path{fill:var(--ink)}
+#ahr path{fill:var(--road)}
+#aht path{fill:var(--time)}
+#ahf path{fill:var(--freq)}
+#aha path{fill:var(--aside)}
+figcaption{color:var(--ink3);font-size:12.5px;margin-top:10px;max-width:80ch}
+.hint{display:none;font-family:var(--mono);font-size:10.5px;color:var(--ink3);
+      letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+@media (max-width:920px){ .hint{display:block} }
+
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.tool{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--road);
+      border-radius:2px;padding:14px 16px 15px;min-width:0}
+.tool.t-time{border-top-color:var(--time)}
+.tool.t-freq{border-top-color:var(--freq)}
+.tool h3{font-family:var(--disp);font-size:17px;margin:0;font-weight:600}
+.tool .where{font-family:var(--mono);font-size:10.5px;color:var(--ink3);letter-spacing:.07em;
+             text-transform:uppercase;margin-top:3px}
+.io{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--panel2);
+    border:1px solid var(--line-soft);border-radius:2px;padding:7px 9px;margin:11px 0 0;
+    overflow-wrap:anywhere}
+.io .ar{color:var(--road)}
+.tool .job{font-size:13.5px;color:var(--ink2);margin:10px 0 0}
+.tool .job b{color:var(--ink);font-weight:500}
+
+.branch{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.br{border:1px solid var(--line);border-radius:2px;padding:14px 16px;min-width:0}
+.br.keep{background:var(--road-wash);border-color:var(--road)}
+.br.drop{background:var(--aside-wash)}
+.br .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+.br.keep .tag{color:var(--road)} .br.drop .tag{color:var(--aside)}
+.br h3{font-family:var(--disp);font-size:18px;margin:4px 0 0;font-weight:600}
+.br .cond{font-family:var(--mono);font-size:13px;margin:8px 0 0;color:var(--ink)}
+.br p{font-size:13.5px;color:var(--ink2);margin:9px 0 0}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:2px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:580px;font-size:13.5px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+         color:var(--ink3);background:var(--panel2);border-bottom:1px solid var(--line)}
+thead th.t{color:var(--time)} thead th.f{color:var(--freq)}
+tbody tr:last-child td{border-bottom:0}
+tr.group td{background:var(--panel2);font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;
+            text-transform:uppercase;color:var(--ink3);padding-top:11px;padding-bottom:7px}
+td.m{font-family:var(--mono);font-size:12.5px}
+td .why{display:block;color:var(--ink3);font-size:12px;margin-top:2px;font-family:var(--sans)}
+td.none{color:var(--ink3)}
+
+.rail{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:10px}
+.lec{background:var(--panel);border:1px solid var(--line);border-radius:2px;padding:10px 12px;
+     min-width:0}
+.lec .n{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:500;
+         letter-spacing:.03em;padding:4px 7px 3px;border-radius:3px;
+         background:var(--road);color:var(--on-road)}
+.lec .t{font-size:13.5px;font-weight:500;margin-top:2px;line-height:1.3}
+.lec .s{font-size:12px;color:var(--ink3);margin-top:5px}
+.lec.opt{border-left:3px solid var(--line)}
+.lec.opt .n{background:transparent;color:var(--aside);box-shadow:inset 0 0 0 1.2px var(--aside)}
+
+.foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);
+      color:var(--ink3);font-size:12.5px;max-width:80ch}
+.home-link{display:inline-block;margin:0 0 14px;color:var(--freq);font-size:13px;font-weight:600;text-decoration:none}
+.home-link:hover{text-decoration:underline}
+</style>
+
+<div class="wrap">
+
+<header>
+  <a class="home-link" href="index.html">← Course home</a>
+  <div class="eyebrow">MECH321 · Dynamics of Engineering Systems · TYUT <span class="z">2026</span></div>
+  <h1>From ODE to Controller</h1>
+  <p class="thesis">One argument runs through the eight core lectures. Lectures 9 and 10 extend it as
+  optional studies. A machine becomes a differential equation. The Laplace transform turns that
+  equation into algebra, carrying the initial conditions with it. Lecture 3 separates the response
+  into the part driven by stored energy and the part driven by the input. <b>The course
+  follows the input part</b>, divides the input out, and is left with the plant itself: G(s). The
+  plant is then read in time and in frequency, and only after that is a loop closed around it.
+  Lecture 6 takes the same modelling chain into the electrical, electromechanical and thermal
+  domains, and introduces state space alongside the transfer function: another representation
+  of the same model, retaining internal states and their initial values.</p>
+</header>
+
+<h2>The chain <span class="zh">整条主线</span></h2>
+<p class="lede">Every arrow is an operation you perform, labelled with the job it does, and with the
+lecture that teaches it. The chain starts in five physical domains: Lecture&nbsp;1 opens four of them and
+Lecture&nbsp;6 returns with the electrical, electromechanical and thermal detail. The amber
+path is the main transfer-function route. The grey response branch keeps the initial-condition
+contribution; the dashed state-space branch introduces a parallel representation in Lecture&nbsp;6.</p>
+
+<figure>
+  <div class="hint">↔ scroll the diagram sideways</div>
+  <div class="chiplegend"><span class="lx">L3</span><b>taught in this core lecture</b><span class="lx opt">L9</span><b>optional extension</b></div>
+  <div class="scroll">
+    <svg viewBox="0 0 880 2026" role="img" aria-label="The MECH321 chain. It starts from five physical domains: mechanical, electrical, electromechanical, fluid and thermal. Lecture 1 opens the mechanical, fluid and electrical domains; Lecture 6 returns to the electrical, electromechanical and thermal domains in more detail with complex impedance, the force-voltage analogy and the DC motor. Physical modelling uses first principles and physical laws to obtain differential equations. The Laplace route separates zero-input and zero-state responses and obtains a transfer function under zero initial conditions. A parallel dashed branch rewrites the differential equation as first-order state equations, developed through a given second-order model in Lecture 6 and related back to physical motor states. State space keeps internal variables and initial states and supports multiple inputs and outputs. Under zero initial conditions it also yields the transfer function. The core route continues through poles and zeros, time and frequency response, feedback, stability margins and a physical decision. Gain selection and controller design are optional extensions.">
+      <defs>
+        <marker id="ah"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z"/></marker>
+        <marker id="ahr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z"/></marker>
+        <marker id="aht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z"/></marker>
+        <marker id="ahf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z"/></marker>
+        <marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z"/></marker>
+      </defs>
+
+      <g font-family="IBM Plex Sans, sans-serif">
+
+        <!-- 1 PHYSICAL SYSTEM: the five domains the course models. L1 opens four of them;
+             L6 returns with the electrical, electromechanical and thermal detail. -->
+        <rect x="26" y="20" width="828" height="152" rx="2" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.4"/>
+        <text x="440" y="44" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">PHYSICAL SYSTEM</text>
+        <text x="440" y="63" text-anchor="middle" font-size="12.5" fill="var(--ink2)">Newton, KVL, torque, mass and heat balances — the same modelling chain in every domain</text>
+        <rect x="40" y="76" width="148" height="84" rx="2" fill="var(--panel)" stroke="var(--line-soft)" stroke-width="1"/>
+        <g><rect x="100.5" y="84" width="27" height="16" rx="3.5" fill="var(--road)"/><text x="114" y="96.2" text-anchor="middle" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L1</text></g>
+        <text x="114" y="119" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".07em" fill="var(--ink3)">MECHANICAL</text>
+        <text x="114" y="137" text-anchor="middle" font-size="12.5" fill="var(--ink)">seat suspension</text>
+        <text x="114" y="152" text-anchor="middle" font-size="12.5" fill="var(--ink)">mass–spring–damper</text>
+        <rect x="203" y="76" width="148" height="84" rx="2" fill="var(--panel)" stroke="var(--line-soft)" stroke-width="1"/>
+        <g><rect x="247.5" y="84" width="27" height="16" rx="3.5" fill="var(--road)"/><text x="261" y="96.2" text-anchor="middle" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L1</text></g>
+        <g><rect x="279.5" y="84" width="27" height="16" rx="3.5" fill="var(--road)"/><text x="293" y="96.2" text-anchor="middle" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L6</text></g>
+        <text x="277" y="119" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".07em" fill="var(--ink3)">ELECTRICAL</text>
+        <text x="277" y="137" text-anchor="middle" font-size="12.5" fill="var(--ink)">series RC and RLC</text>
+        <text x="277" y="152" text-anchor="middle" font-size="12.5" fill="var(--ink)">complex impedance</text>
+        <rect x="366" y="76" width="148" height="84" rx="2" fill="var(--panel)" stroke="var(--line-soft)" stroke-width="1"/>
+        <g><rect x="410.5" y="84" width="27" height="16" rx="3.5" fill="var(--road)"/><text x="424" y="96.2" text-anchor="middle" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L1</text></g>
+        <g><rect x="442.5" y="84" width="27" height="16" rx="3.5" fill="var(--road)"/><text x="456" y="96.2" text-anchor="middle" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L6</text></g>
+        <text x="440" y="119" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".07em" fill="var(--ink3)">ELECTROMECHANICAL</text>
+        <text x="440" y="137" text-anchor="middle" font-size="12.5" fill="var(--ink)">DC motor</text>
+        <text x="440" y="152" text-anchor="middle" font-size="12.5" fill="var(--ink)">robot joint actuator</text>
+        <rect x="529" y="76" width="148" height="84" rx="2" fill="var(--panel)" stroke="var(--line-soft)" stroke-width="1"/>
+        <g><rect x="589.5" y="84" width="27" height="16" rx="3.5" fill="var(--road)"/><text x="603" y="96.2" text-anchor="middle" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L1</text></g>
+        <text x="603" y="119" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".07em" fill="var(--ink3)">FLUID</text>
+        <text x="603" y="137" text-anchor="middle" font-size="12.5" fill="var(--ink)">water tank and valve</text>
+        <text x="603" y="152" text-anchor="middle" font-size="12.5" fill="var(--ink)">hydraulic, pneumatic</text>
+        <rect x="692" y="76" width="148" height="84" rx="2" fill="var(--panel)" stroke="var(--line-soft)" stroke-width="1"/>
+        <g><rect x="752.5" y="84" width="27" height="16" rx="3.5" fill="var(--road)"/><text x="766" y="96.2" text-anchor="middle" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L6</text></g>
+        <text x="766" y="119" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing=".07em" fill="var(--ink3)">THERMAL</text>
+        <text x="766" y="137" text-anchor="middle" font-size="12.5" fill="var(--ink)">thermometer</text>
+        <text x="766" y="152" text-anchor="middle" font-size="12.5" fill="var(--ink)">thermal sensor</text>
+
+        <path d="M440 172 V236" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#ah)"/>
+        <g><rect x="454" y="180" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="467.5" y="193.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L1</text></g>
+        <text x="489" y="193" font-size="13" font-weight="600" fill="var(--ink)">PHYSICAL MODELLING</text>
+        <text x="489" y="210" font-size="11.5" fill="var(--ink3)">first principles; choose the boundary; count the independent states</text>
+        <g><rect x="454" y="214" width="27" height="17" rx="3.5" fill="var(--road)"/><text x="467.5" y="226.7" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L6</text></g>
+        <text x="489" y="227" font-size="11.5" fill="var(--ink3)">again in new domains: circuits, impedance, the analogy, the motor</text>
+
+        <g transform="translate(0 114)">
+        <!-- 2 ODE -->
+        <rect x="226" y="122" width="428" height="84" rx="2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.4"/>
+        <text x="440" y="146" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">DIFFERENTIAL EQUATION</text>
+        <text x="440" y="170" text-anchor="middle" font-size="14" font-family="IBM Plex Mono, monospace" fill="var(--ink)">m ẍ + b ẋ + k x = u(t)</text>
+        <text x="440" y="191" text-anchor="middle" font-size="12.5" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">u(t): applied force; x₀ = x(0), v₀ = ẋ(0)</text>
+        <text x="20" y="139" font-size="11" font-weight="600" letter-spacing=".06em" fill="var(--ink3)">SAME FORM, EVERY DOMAIN</text>
+        <text x="20" y="156" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">L q̈ + R q̇ + q/C = v(t)</text>
+
+        <!-- Parallel representation: derive states directly from the ODE, not from the zero-state branch. -->
+        <path d="M226 164 H8 V550 H211 V566" stroke="var(--aside)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" marker-end="url(#aha)"/>
+        <g><rect x="18" y="213" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="31.5" y="226.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L6</text></g>
+        <text x="53" y="226" font-size="12" font-weight="600" fill="var(--aside)">CHOOSE STATES</text>
+        <text x="53" y="244" font-size="11.5" fill="var(--ink3)">rewrite as first-order equations</text>
+
+        <path d="M440 206 V256" stroke="var(--road)" stroke-width="2" fill="none" marker-end="url(#ahr)"/>
+        <g><rect x="454" y="213" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="467.5" y="226.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L2</text></g>
+        <text x="489" y="226" font-size="13" font-weight="600" fill="var(--road)">FORWARD LAPLACE TRANSFORM</text>
+        <text x="489" y="243" font-size="12" fill="var(--ink3)">differentiation becomes multiplication by s</text>
+
+        <!-- 3 ALGEBRA IN s -->
+        <rect x="178" y="256" width="524" height="92" rx="2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.4"/>
+        <text x="440" y="280" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">ALGEBRAIC EQUATION IN s</text>
+        <text x="440" y="305" text-anchor="middle" font-size="13.5" font-family="IBM Plex Mono, monospace" fill="var(--ink)">(ms² + bs + k) X(s)  =  U(s)  +  [ initial-condition terms ]</text>
+        <text x="440" y="330" text-anchor="middle" font-size="12.5" fill="var(--ink2)">two sources on the right: the input, and the energy already stored</text>
+
+        <path d="M440 348 V374" stroke="var(--ink)" stroke-width="1.4" fill="none"/>
+        <path d="M150 374 H700" stroke="var(--ink)" stroke-width="1.4" fill="none"/>
+        <path d="M150 374 V406" stroke="var(--aside)" stroke-width="1.4" fill="none" marker-end="url(#aha)"/>
+        <path d="M700 374 V406" stroke="var(--road)" stroke-width="2" fill="none" marker-end="url(#ahr)"/>
+        <g><rect x="232" y="383" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="245.5" y="396.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L3</text></g><text x="267" y="396" font-size="12.5" font-weight="600" fill="var(--ink2)">SEPARATE THE TWO SOURCES</text>
+
+        <!-- 4L zero-input -->
+        <rect x="26" y="406" width="248" height="88" rx="2" fill="var(--aside-wash)" stroke="var(--aside)" stroke-width="1.3"/>
+        <text x="150" y="429" text-anchor="middle" font-size="14.5" font-weight="600" fill="var(--aside)">ZERO-INPUT RESPONSE</text>
+        <text x="150" y="451" text-anchor="middle" font-size="12.5" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">u(t) = <tspan class="z">0</tspan>; (x₀, v₀) ≠ (0, 0)</text>
+        <text x="150" y="470" text-anchor="middle" font-size="12.5" fill="var(--ink2)">the plant moving on stored</text>
+        <text x="150" y="486" text-anchor="middle" font-size="12.5" fill="var(--ink2)">energy alone</text>
+        <path d="M150 494 V516" stroke="var(--aside)" stroke-width="1.3" fill="none"/>
+        <path d="M116 516 H184" stroke="var(--aside)" stroke-width="2.6" fill="none"/>
+        <g><rect x="44" y="525" width="27" height="17" rx="3.5" fill="var(--road)"/><text x="57.5" y="537.7" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L3</text></g><text x="79" y="537" font-size="12" fill="var(--aside)">written out; state space keeps it</text>
+
+        <!-- 4R zero-state -->
+        <rect x="486" y="406" width="318" height="88" rx="2" fill="var(--road-wash)" stroke="var(--road)" stroke-width="2"/>
+        <text x="645" y="429" text-anchor="middle" font-size="14.5" font-weight="600" fill="var(--road)">ZERO-STATE RESPONSE</text>
+        <text x="645" y="451" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" fill="var(--ink)">x₀ = v₀ = <tspan class="z">0</tspan>; u(t) arbitrary</text>
+        <text x="645" y="470" text-anchor="middle" font-size="12.5" fill="var(--ink2)">the plant driven by its input;</text>
+        <text x="645" y="486" text-anchor="middle" font-size="12.5" fill="var(--ink2)">the transfer-function route assumes this</text>
+
+        <path d="M645 494 V566" stroke="var(--road)" stroke-width="2" fill="none" marker-end="url(#ahr)"/>
+        <g><rect x="658" y="506" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="671.5" y="519.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L3</text></g>
+        <text x="693" y="519" font-size="13" font-weight="600" fill="var(--road)">DIVIDE BY U(s)</text>
+        <text x="693" y="536" font-size="11.5" fill="var(--ink3)">input-output representation</text>
+
+        <!-- 5L STATE SPACE: brief introduction, with future scope marked explicitly. -->
+        <rect x="26" y="566" width="370" height="156" rx="2" fill="var(--aside-wash)" stroke="var(--aside)" stroke-width="1.4" stroke-dasharray="5 4"/>
+        <text x="211" y="590" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">STATE SPACE</text>
+        <text x="211" y="610" text-anchor="middle" font-size="12" fill="var(--ink2)">first-order state equations and an output equation</text>
+        <text x="211" y="633" text-anchor="middle" font-size="14" font-family="IBM Plex Mono, monospace" fill="var(--ink)">ż = Az + Bu</text>
+        <text x="211" y="654" text-anchor="middle" font-size="14" font-family="IBM Plex Mono, monospace" fill="var(--ink)">y = Cz + Du</text>
+        <text x="211" y="675" text-anchor="middle" font-size="12.5" fill="var(--ink2)">two-state example: x = [i, ω]ᵀ, the DC motor</text>
+        <text x="211" y="696" text-anchor="middle" font-size="12.5" fill="var(--ink2)">internal variables; initial state need not be zero</text>
+        <g><rect x="57" y="703" width="27" height="17" rx="3.5" fill="var(--road)"/><text x="70.5" y="715.7" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L6</text></g><text x="92" y="715" font-size="12" font-weight="600" fill="var(--aside)">WORKED REPRESENTATION · design in later courses</text>
+
+        <!-- 5 TRANSFER FUNCTION -->
+        <rect x="486" y="566" width="368" height="82" rx="2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.4"/>
+        <text x="670" y="590" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">TRANSFER FUNCTION</text>
+        <text x="670" y="615" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" fill="var(--ink)">G(s) = X(s)/U(s) = N(s)/D(s)</text>
+        <text x="670" y="636" text-anchor="middle" font-size="12.5" fill="var(--ink2)">input-output relation; zero initial state</text>
+
+        <path d="M396 631 H486" stroke="var(--aside)" stroke-width="1.3" stroke-dasharray="4 3" fill="none" marker-end="url(#aha)"/>
+        <text x="441" y="622" text-anchor="middle" font-size="10.5" fill="var(--aside)">zero ICs</text>
+
+        <path d="M670 648 V744 H440 V790" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#ah)"/>
+        <text x="454" y="774" font-size="12" fill="var(--ink3)">factor N(s) and D(s)</text>
+
+        <g transform="translate(0 100)">
+        <!-- 6 POLES & ZEROS -->
+        <rect x="246" y="690" width="388" height="78" rx="2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.4"/>
+        <text x="440" y="714" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">POLES  ×   AND   ZEROS  ○</text>
+        <text x="440" y="736" text-anchor="middle" font-size="12.5" fill="var(--ink2)">poles = roots of D(s), the modes the plant has</text>
+        <text x="440" y="754" text-anchor="middle" font-size="12.5" fill="var(--ink2)">zeros = roots of N(s), how strongly each mode shows</text>
+        <g><rect x="594" y="698" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="607.5" y="711.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L3</text></g>
+
+        <path d="M440 768 V800" stroke="var(--ink)" stroke-width="1.4" fill="none"/>
+        <path d="M215 800 H665" stroke="var(--ink)" stroke-width="1.4" fill="none"/>
+        <path d="M215 800 V832" stroke="var(--time)" stroke-width="1.8" fill="none" marker-end="url(#aht)"/>
+        <path d="M665 800 V832" stroke="var(--freq)" stroke-width="1.8" fill="none" marker-end="url(#ahf)"/>
+
+        <!-- ============ TIME PANEL ============ -->
+        <rect x="18" y="832" width="394" height="372" rx="2" fill="var(--time-wash)" stroke="var(--time)" stroke-width="1.3"/>
+        <rect x="18" y="832" width="394" height="34" fill="var(--time)"/>
+        <text x="215" y="855" text-anchor="middle" font-size="15" font-weight="600" fill="var(--panel)">TIME DOMAIN</text>
+        <g><rect x="368" y="840" width="27" height="18" rx="3.5" fill="var(--panel)"/><text x="381.5" y="853.2" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--time)">L4</text></g>
+
+        <!-- input sketch -->
+        <rect x="38" y="880" width="84" height="46" rx="2" fill="var(--panel)" stroke="var(--line-soft)" stroke-width="1"/>
+        <path d="M46 918 H112" stroke="var(--ink3)" stroke-width="1" fill="none"/>
+        <path d="M48 918 V890" stroke="var(--ink3)" stroke-width="1" fill="none"/>
+        <path d="M50 915 H64 V893 H110" stroke="var(--time)" stroke-width="2" fill="none"/>
+        <text x="132" y="894" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="var(--ink3)">INPUT</text>
+        <text x="132" y="912" font-size="13.5" font-family="IBM Plex Mono, monospace" fill="var(--ink)">u(t) = unit step</text>
+        <text x="132" y="929" font-size="12" fill="var(--ink2)">one event, watched to the end</text>
+
+        <path d="M78 942 V988" stroke="var(--time)" stroke-width="1.8" fill="none" marker-end="url(#aht)"/>
+        <g><rect x="94" y="946" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="107.5" y="959.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L2</text></g>
+        <text x="129" y="959" font-size="13" font-weight="600" fill="var(--time)">INVERSE LAPLACE TRANSFORM</text>
+        <text x="129" y="976" font-size="12" fill="var(--ink2)">turn X(s) = G(s)U(s) back into a curve in t</text>
+        <g><rect x="94" y="982" width="34" height="16" rx="3.5" fill="var(--road)"/><text x="111.0" y="994.2" text-anchor="middle" font-size="10.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L2A</text></g>
+        <text x="133" y="994" font-size="11.5" fill="var(--ink3)">partial fractions make this step possible</text>
+
+        <text x="215" y="1012" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--ink)">SECOND-ORDER STEP RESPONSE</text>
+
+        <!-- step response plot -->
+        <path d="M80 1026 V1152 M76 1148 H396" stroke="var(--ink3)" stroke-width="1.1" fill="none"/>
+        <path d="M80 1083 H394" stroke="var(--time)" stroke-width="1" stroke-dasharray="4 3" fill="none" opacity=".75"/>
+        <path d="M169 1066 V1148" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+        <path d="M340 1082 V1148" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+        <polyline points="80,1148 93,1141 106,1125 119,1105 132,1088 145,1075 158,1068 169,1066 184,1069 197,1073 210,1078 223,1082 236,1085 249,1087 262,1087 275,1086 288,1085 314,1083 340,1082 366,1083 392,1083"
+                  fill="none" stroke="var(--time)" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M178 1083 V1066" stroke="var(--ink)" stroke-width="1" fill="none" marker-start="url(#ah)" marker-end="url(#ah)"/>
+        <text x="186" y="1079" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink)">Mp</text>
+        <text x="166" y="1166" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">tp</text>
+        <text x="336" y="1166" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">ts</text>
+        <text x="392" y="1076" text-anchor="end" font-size="11.5" fill="var(--ink3)">steady value</text>
+        <text x="74" y="1032" text-anchor="end" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">y</text>
+        <text x="400" y="1152" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">t</text>
+        <text x="215" y="1190" text-anchor="middle" font-size="12" fill="var(--ink3)">overshoot, peak time and settling time live here</text>
+
+        <!-- ============ FREQ PANEL ============ -->
+        <rect x="468" y="832" width="394" height="372" rx="2" fill="var(--freq-wash)" stroke="var(--freq)" stroke-width="1.3"/>
+        <rect x="468" y="832" width="394" height="34" fill="var(--freq)"/>
+        <text x="665" y="855" text-anchor="middle" font-size="15" font-weight="600" fill="var(--panel)">FREQUENCY DOMAIN</text>
+        <g><rect x="818" y="840" width="27" height="18" rx="3.5" fill="var(--panel)"/><text x="831.5" y="853.2" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--freq)">L5</text></g>
+
+        <!-- input sketch -->
+        <rect x="488" y="880" width="84" height="46" rx="2" fill="var(--panel)" stroke="var(--line-soft)" stroke-width="1"/>
+        <path d="M496 918 H566" stroke="var(--ink3)" stroke-width="1" fill="none"/>
+        <path d="M498 918 V890" stroke="var(--ink3)" stroke-width="1" fill="none"/>
+        <path d="M500 903 Q509 886 518 903 T536 903 T554 903 T562 903" stroke="var(--freq)" stroke-width="2" fill="none"/>
+        <text x="582" y="894" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="var(--ink3)">INPUT</text>
+        <text x="582" y="912" font-size="13.5" font-family="IBM Plex Mono, monospace" fill="var(--ink)">u(t) = A sin ωt</text>
+        <text x="582" y="929" font-size="12" fill="var(--ink2)">swept, one frequency at a time</text>
+
+        <path d="M528 942 V988" stroke="var(--freq)" stroke-width="1.8" fill="none" marker-end="url(#ahf)"/>
+        <g><rect x="544" y="946" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="557.5" y="959.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L5</text></g>
+        <text x="579" y="959" font-size="13" font-weight="600" fill="var(--freq)">EVALUATE AT s = jω</text>
+        <text x="579" y="976" font-size="12" fill="var(--ink2)">no inversion and no partial fractions</text>
+        <text x="579" y="991" font-size="11.5" fill="var(--ink3)">one magnitude and one phase at each ω</text>
+
+        <text x="665" y="1012" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--ink)">BODE DIAGRAM</text>
+
+        <!-- magnitude -->
+        <path d="M534 1024 V1082 M530 1078 H846" stroke="var(--ink3)" stroke-width="1.1" fill="none"/>
+        <path d="M534 1042 H689 M689 1042 L844 1076" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="4 3" fill="none"/>
+        <polyline points="534,1041.9 607.9,1041.3 642.3,1040.0 665,1037.6 678.2,1034.8 686.6,1033.0 689,1033.1 701.3,1037.8 716.3,1044.1 735.7,1050.3 762.9,1057.4 797.3,1065.5 844,1075.9"
+                  fill="none" stroke="var(--freq)" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M689 1028 V1078" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+        <text x="528" y="1046" text-anchor="end" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="var(--ink2)"><tspan class="z">0</tspan> dB</text>
+        <text x="696" y="1031" font-size="11.5" fill="var(--ink)">resonant peak</text>
+        <text x="786" y="1052" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">−<tspan class="z">40</tspan> dB/dec</text>
+        <text x="850" y="1082" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">ω</text>
+
+        <!-- phase -->
+        <path d="M534 1092 V1150 M530 1146 H846" stroke="var(--ink3)" stroke-width="1.1" fill="none"/>
+        <polyline points="534,1098.4 607.9,1099.4 642.3,1100.9 665,1103.7 678.2,1108.9 689,1121.0 701.3,1134.0 716.3,1139.0 735.7,1141.1 762.9,1142.4 797.3,1143.1 844,1143.6"
+                  fill="none" stroke="var(--freq)" stroke-width="2.4" stroke-linejoin="round"/>
+        <text x="528" y="1102" text-anchor="end" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="var(--ink2)"><tspan class="z">0</tspan>°</text>
+        <text x="528" y="1125" text-anchor="end" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">−<tspan class="z">90</tspan>°</text>
+        <text x="528" y="1148" text-anchor="end" font-size="11.5" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">−<tspan class="z">180</tspan>°</text>
+        <text x="684" y="1168" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink2)">ωn</text>
+        <path d="M689 1094 V1146" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+        <text x="665" y="1190" text-anchor="middle" font-size="12" fill="var(--ink3)">phase lag is read directly at each frequency</text>
+
+        <!-- join -->
+        <path d="M215 1204 V1232 H665 V1204" stroke="var(--ink)" stroke-width="1.4" fill="none"/>
+        <path d="M440 1232 V1262" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#ah)"/>
+
+        <rect x="92" y="1262" width="696" height="100" rx="2" fill="var(--panel2)" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <text x="440" y="1287" text-anchor="middle" font-size="14.5" font-weight="600" fill="var(--ink)">WHAT EACH READING SHOWS</text>
+        <text x="440" y="1309" text-anchor="middle" font-size="12.5" fill="var(--ink2)">Time domain: one input, and the complete history of the output.</text>
+        <text x="440" y="1328" text-anchor="middle" font-size="12.5" fill="var(--ink2)">Frequency domain: every input frequency, with the gain and phase at each one.</text>
+        <text x="440" y="1350" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--road)">Frequency response directly displays phase, resonance, bandwidth and stability margins.</text>
+
+        <path d="M440 1362 V1414" stroke="var(--road)" stroke-width="2" fill="none" marker-end="url(#ahr)"/>
+        <g><rect x="454" y="1370" width="27" height="19" rx="3.5" fill="var(--road)"/><text x="467.5" y="1383.7" text-anchor="middle" font-size="12" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L7</text></g>
+        <text x="489" y="1383" font-size="13" font-weight="600" fill="var(--road)">CLOSE THE LOOP</text>
+        <text x="489" y="1400" font-size="12" fill="var(--ink3)">everything above describes the plant; none of it changes one</text>
+
+        <!-- FEEDBACK -->
+        <rect x="226" y="1414" width="428" height="88" rx="2" fill="var(--road-wash)" stroke="var(--road)" stroke-width="2"/>
+        <text x="440" y="1440" text-anchor="middle" font-size="16" font-weight="600" fill="var(--road)">FEEDBACK</text>
+        <text x="440" y="1464" text-anchor="middle" font-size="14" font-family="IBM Plex Mono, monospace" fill="var(--ink)">T = GC / (1 + GC)</text>
+        <text x="440" y="1487" text-anchor="middle" font-size="12.5" fill="var(--ink2)">closed-loop poles solve 1 + GC = 0; L7 reaches the boundary L(jω) = −1</text>
+
+        <path d="M440 1502 V1530" stroke="var(--ink)" stroke-width="1.4" fill="none"/>
+        <path d="M150 1530 H730" stroke="var(--ink)" stroke-width="1.4" fill="none"/>
+        <path d="M150 1530 V1558" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#ah)"/><g><rect x="160" y="1532" width="27" height="18" rx="3.5" fill="var(--road)"/><text x="173.5" y="1545.2" text-anchor="middle" font-size="11.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--on-road)">L8</text></g>
+        <path d="M440 1530 V1558" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#ah)"/><g><rect x="450" y="1532" width="27" height="18" rx="3.5" fill="none" stroke="var(--aside)" stroke-width="1.3"/><text x="463.5" y="1545.2" text-anchor="middle" font-size="11.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--aside)">L9</text></g>
+        <path d="M730 1530 V1558" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#ah)"/><g><rect x="740" y="1532" width="34" height="18" rx="3.5" fill="none" stroke="var(--aside)" stroke-width="1.3"/><text x="757.0" y="1545.2" text-anchor="middle" font-size="11.5" font-weight="600" font-family="IBM Plex Mono, monospace" letter-spacing=".02em" fill="var(--aside)">L10</text></g>
+
+        <rect x="26" y="1558" width="248" height="108" rx="2" fill="var(--road-wash)" stroke="var(--road)" stroke-width="2"/>
+        <text x="150" y="1582" text-anchor="middle" font-size="14.5" font-weight="600" fill="var(--road)">MEASURE THE MARGIN</text>
+        <text x="150" y="1604" text-anchor="middle" font-size="12.5" fill="var(--ink2)">how far from −1 the loop runs</text>
+        <text x="150" y="1622" text-anchor="middle" font-size="12.5" font-family="IBM Plex Mono, monospace" fill="var(--ink)">Z = N+P · GM · PM · delay</text>
+        <text x="150" y="1643" text-anchor="middle" font-size="12" fill="var(--road)">core stability view</text>
+        <text x="150" y="1659" text-anchor="middle" font-size="11.5" fill="var(--ink3)">stable is a verdict; a margin is a distance</text>
+
+        <rect x="316" y="1558" width="248" height="108" rx="2" fill="var(--panel)" stroke="var(--aside)" stroke-width="1.3"/>
+        <text x="440" y="1582" text-anchor="middle" font-size="14.5" font-weight="600" fill="var(--ink)">TURN UP THE GAIN</text>
+        <text x="440" y="1604" text-anchor="middle" font-size="12.5" fill="var(--ink2)">root locus: K moves the poles</text>
+        <text x="440" y="1622" text-anchor="middle" font-size="12.5" fill="var(--ink2)">accuracy ↑, overshoot ↑, effort ↑</text>
+        <text x="440" y="1643" text-anchor="middle" font-size="12" fill="var(--aside)">optional gain/pole extension</text>
+        <text x="440" y="1659" text-anchor="middle" font-size="11.5" fill="var(--ink3)">saturation and uncertainty bound the choice</text>
+
+        <rect x="606" y="1558" width="248" height="108" rx="2" fill="var(--panel)" stroke="var(--aside)" stroke-width="1.3"/>
+        <text x="730" y="1582" text-anchor="middle" font-size="14.5" font-weight="600" fill="var(--ink)">SHAPE THE LOOP</text>
+        <text x="730" y="1604" text-anchor="middle" font-size="12.5" font-family="IBM Plex Mono, monospace" fill="var(--ink)">C(s) = Kp + Ki/s + Kd·s</text>
+        <text x="730" y="1622" text-anchor="middle" font-size="12.5" fill="var(--ink2)">present · accumulated · anticipated</text>
+        <text x="730" y="1643" text-anchor="middle" font-size="12" fill="var(--aside)">optional controller design</text>
+        <text x="730" y="1659" text-anchor="middle" font-size="11.5" fill="var(--ink3)">windup sits outside the linear model</text>
+
+        <path d="M150 1666 V1692 H730 V1666" stroke="var(--ink)" stroke-width="1.4" fill="none"/>
+        <path d="M440 1692 V1722" stroke="var(--road)" stroke-width="2" fill="none" marker-end="url(#ahr)"/>
+
+        <rect x="226" y="1722" width="428" height="78" rx="2" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.6"/>
+        <text x="440" y="1748" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">AN ENGINEERING DECISION</text>
+        <text x="440" y="1770" text-anchor="middle" font-size="12.5" fill="var(--ink2)">does it meet the specification with a real actuator,</text>
+        <text x="440" y="1788" text-anchor="middle" font-size="12.5" fill="var(--ink2)">a real sensor, and a plant you know only approximately?</text>
+        </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <figcaption>A free response is real physics and is examinable. It is left out of the lower chain
+  because a transfer function cannot carry it: G(s) is defined with zero initial conditions. When a problem
+  starts from a released spring or a spinning rotor, you are above the split, not inside G(s).</figcaption>
+</figure>
+
+<h2>What each tool is for <span class="zh">每个工具到底在做什么</span></h2>
+<p class="lede">Five operations carry the whole course. Knowing which one you are holding tells you
+where you are standing on the chain.</p>
+<div class="tools">
+
+  <div class="tool">
+    <h3>Forward transform</h3>
+    <div class="where"><span class="lx">L2</span> ODE → algebra</div>
+    <div class="io">m ẍ + b ẋ + k x = u(t) <span class="ar">→</span> (ms²+bs+k)X(s) = U(s) + ICs</div>
+    <p class="job"><b>Job: make the equation solvable.</b> Each derivative becomes a multiplication
+    by s, so calculus turns into arithmetic, and the initial conditions travel with it as extra
+    terms. The physics is unchanged. Only the form of the equation changes.</p>
+  </div>
+
+  <div class="tool">
+    <h3>Divide by U(s)</h3>
+    <div class="where"><span class="lx">L3</span> algebra → plant</div>
+    <div class="io">X(s) = G(s)·U(s) <span class="ar">→</span> G(s) = X(s)/U(s)</div>
+    <p class="job"><b>Job: separate the machine from the test.</b> The division removes whichever
+    input you applied and leaves the selected input-output description of the plant.
+    This transfer-function route assumes zero initial conditions. The parallel state-space
+    representation introduced in Lecture 6 can retain a nonzero initial state.</p>
+  </div>
+
+  <div class="tool t-time">
+    <h3>Inverse transform</h3>
+    <div class="where"><span class="lx">L2</span> s-answer → curve</div>
+    <div class="io">X(s) = 5/[s(s²+2s+5)] <span class="ar">→</span> x(t)</div>
+    <p class="job"><b>Job: get the answer back into time.</b> The algebra is done in s. The answer is
+    needed in t: how far it moves, how long it rings. You do the full inversion only a few times,
+    for the standard first- and second-order forms. After that you read overshoot and settling
+    straight off the pole locations.</p>
+  </div>
+
+  <div class="tool t-time">
+    <h3>Partial fractions</h3>
+    <div class="where"><span class="lx">L2A</span> in service of the inverse</div>
+    <div class="io">N(s)/D(s) <span class="ar">→</span> A/(s−p₁) + B/(s−p₂) + …</div>
+    <p class="job"><b>Job: split the expression into terms the table recognises.</b> The technique
+    carries no physics of its own and is used nowhere else in the course. It exists so the inverse
+    transform can be done term by term, which is also why the frequency branch never needs it.</p>
+  </div>
+
+  <div class="tool t-freq">
+    <h3>Set s = jω</h3>
+    <div class="where"><span class="lx">L5</span> plant → measured curve</div>
+    <div class="io">G(s) <span class="ar">→</span> G(jω) = |G(jω)| ∠G(jω)</div>
+    <p class="job"><b>Job: find what the plant does to a sine you can actually apply.</b> On the
+    imaginary axis G(s) becomes one magnitude and one phase per frequency. No inversion and no
+    partial fractions. This is the reading you can obtain directly from a rig, so model validation
+    is done here.</p>
+  </div>
+
+</div>
+
+<h2>Which part of the response you keep <span class="zh">两个分支</span></h2>
+<p class="lede">The transformed equation has two sources on its right-hand side. Which one you keep
+decides which half of the subject you are in.</p>
+<div class="branch">
+  <div class="br drop">
+    <div class="tag">Branch A · set aside <span class="lx">L3</span></div>
+    <h3>Zero-input response</h3>
+    <div class="cond">u(t) = <span class="z">0</span>,&nbsp;&nbsp;(x₀, v₀) ≠ (0, 0)</div>
+    <p>Driven by stored energy: a released spring, a coasting rotor. It cannot be written as
+    G(s)·U(s), because the transfer-function calculation sets the initial state to zero. Lecture 2
+    carries the initial-condition terms into the algebra; Lecture 3 writes this contribution out as
+    X₂(s) = [(ms+b)x₀ + mv₀] / D(s) and then sets it aside. Lecture 4 connects its poles to free-decay modes, and Project 1 uses a fixed-floor release test. Lecture 6 retains initial states explicitly in state space.</p>
+  </div>
+  <div class="br keep">
+    <div class="tag">Branch B · the road <span class="lx">L3</span></div>
+    <h3>Zero-state response</h3>
+    <div class="cond">x₀ = v₀ = <span class="z">0</span>,&nbsp;&nbsp;u(t) arbitrary</div>
+    <p>Driven by the input. This is the branch that supports a transfer function, poles and zeros,
+    step response, Bode diagram, feedback and every controller. A later lecture saying "assume zero
+    initial conditions" is pointing back at this choice.</p>
+  </div>
+</div>
+
+<h2>State space alongside the transfer function <span class="lx">L6</span> <span class="zh">同一模型的两种表示</span></h2>
+<p class="lede">Lecture 6, especially slides 19–26, develops these as parallel views of the same
+physical model. The dashed branch is a complete representation example, not a second control-design route.</p>
+<p>State space rewrites the governing differential equations as a set of first-order equations.
+The worked example begins from a given two-state model so the lecture can focus on the representation.
+It then relates the abstract coordinates to physical motor states such as armature current and shaft
+speed. Two independent states give a two-dimensional state vector and a 2 × 2 A matrix; state space
+is not restricted to two states.</p>
+<p>Its advantages are explicit internal variables, initial states that need not be zero, and a
+convenient representation for multiple inputs and outputs. Under zero initial conditions it also
+gives the transfer function. State feedback, observers and multi-input/multi-output control build
+on this representation in later courses; we do not develop those methods here.</p>
+
+<h2>What frequency response shows directly <span class="zh">频域更直接地展示哪些信息</span></h2>
+<p class="lede">A step response answers one question: what happens after this particular event. A
+frequency sweep answers a different one: which inputs this plant is vulnerable to, and how much
+room the loop has before it becomes unstable. The comparison is between a unit-step trace and
+a sinusoidal frequency sweep, not a claim that the two domains contain mutually exclusive information.
+At one frequency, sinusoidal time records give gain from the amplitude ratio and phase from the
+time offset. A sweep repeats that measurement across frequencies.</p>
+<div class="tablewrap">
+  <table>
+    <thead>
+      <tr><th>Question</th><th class="t">Time domain · unit step in</th><th class="f">Frequency domain · sine swept in</th></tr>
+    </thead>
+    <tbody>
+      <tr class="group"><td colspan="3">Both readings answer these</td></tr>
+      <tr>
+        <td>How fast does it respond?</td>
+        <td class="m">time constant τ, rise time tr<span class="why">set by the real part of the pole</span></td>
+        <td class="m">corner frequency, bandwidth<span class="why">where the magnitude falls 3 dB</span></td>
+      </tr>
+      <tr>
+        <td>How much does it ring?</td>
+        <td class="m">overshoot Mp, damping ratio ζ<span class="why">set by the angle of the pole</span></td>
+        <td class="m">height of the resonant peak<span class="why">for a standard zero-free second-order model, a peak exists only for ζ below 0.707</span></td>
+      </tr>
+      <tr>
+        <td>What is its steady gain?</td>
+        <td class="m">final value of the step response<span class="why">equals G(0)</span></td>
+        <td class="m">the flat low-frequency level, in dB</td>
+      </tr>
+      <tr class="group"><td colspan="3">Direct frequency-response readings</td></tr>
+      <tr>
+        <td>Which inputs get through, and which are attenuated?</td>
+        <td class="none">not read directly from a step plot; input/output data and a transform or fitted model are needed</td>
+        <td class="m">read the magnitude at each ω<span class="why">this is the whole isolation argument in Project 1</span></td>
+      </tr>
+      <tr>
+        <td>At which excitation frequency is it worst?</td>
+        <td class="none">ringing frequency is visible, but it is not the driven resonant-peak frequency</td>
+        <td class="m">the location of the resonant peak, ωr</td>
+      </tr>
+      <tr>
+        <td>How much phase lag does it add?</td>
+        <td class="none">not directly read from a step plot; sinusoidal time offsets can measure phase</td>
+        <td class="m">the phase curve<span class="why">and phase lag is what turns negative feedback positive</span></td>
+      </tr>
+      <tr>
+        <td>How close is the loop to instability?</td>
+        <td class="none">a stable trace alone does not quantify gain or phase margin</td>
+        <td class="m">gain margin and phase margin<span class="why">defined on the loop-frequency curve <span class="lx">L8</span></span></td>
+      </tr>
+      <tr>
+        <td>How much transport delay can it absorb?</td>
+        <td class="none">a trace shows delayed motion; a feedback delay budget also needs the loop model</td>
+        <td class="m">delay budget from the phase margin<span class="why">a delay costs ωτ of phase and no magnitude</span></td>
+      </tr>
+      <tr>
+        <td>Up to what frequency is the model valid?</td>
+        <td class="none">one trace may reveal mismatch, but does not directly map validity by excitation frequency</td>
+        <td class="m">the frequency where measured and fitted curves part</td>
+      </tr>
+      <tr class="group"><td colspan="3">Direct transient-response readings</td></tr>
+      <tr>
+        <td>Does it meet the written specification?</td>
+        <td class="m">overshoot in %, settling in seconds<span class="why">these are the numbers a customer writes down</span></td>
+        <td class="none">not read directly from a Bode curve; use the model to predict the transient</td>
+      </tr>
+      <tr>
+        <td>Does the actuator survive the first instant?</td>
+        <td class="m">peak demand u(<span class="z">0</span>+) from the transient</td>
+        <td class="none">not visible in a steady-state curve</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Where each lecture sits <span class="zh">你走到哪一步了</span></h2>
+<p class="lede">Act I builds the chain on the vehicle seat suspension. Act II carries the same modelling
+chain into new domains for the robot joint, then closes with core feedback, Nyquist evidence and
+physical feasibility. Lectures 9–10 are optional extensions.</p>
+<div class="rail">
+  <div class="lec"><div class="n">LECTURE <span class="z">01</span></div><div class="t">Introduction</div><div class="s">machine → differential equation</div></div>
+  <div class="lec"><div class="n">LECTURE <span class="z">02</span></div><div class="t">Laplace Transform</div><div class="s">ODE → algebra → back to a response; derivatives carry the initial conditions</div></div>
+  <div class="lec"><div class="n">LECTURE <span class="z">02A</span></div><div class="t">Partial Fractions</div><div class="s">inverse-Laplace method used during Lecture 2</div></div>
+  <div class="lec"><div class="n">LECTURE <span class="z">03</span></div><div class="t">Transfer Functions</div><div class="s">zero-state / zero-input split · ÷ U(s) · block diagrams · poles and zeros</div></div>
+  <div class="lec"><div class="n">LECTURE <span class="z">04</span></div><div class="t">Transient Response</div><div class="s">the time-domain reading</div></div>
+  <div class="lec"><div class="n">LECTURE <span class="z">05</span></div><div class="t">Frequency Response</div><div class="s">the frequency-domain reading, and model validation</div></div>
+  <div class="lec"><div class="n">LECTURE <span class="z">06</span></div><div class="t">Physical Modelling and State Space</div><div class="s">the same chain in new domains: circuits, analogy, DC motor, state space</div></div>
+  <div class="lec"><div class="n">LECTURE <span class="z">07</span></div><div class="t">Feedback</div><div class="s">close the loop · error · disturbance · the boundary L(jω) = −1</div></div>
+  <div class="lec"><div class="n">LECTURE <span class="z">08</span></div><div class="t">Nyquist Stability and Margins</div><div class="s">core conclusion: stability evidence and physical decision</div></div>
+  <div class="lec opt"><div class="n">LECTURE <span class="z">09</span></div><div class="t">Root Locus and Robustness · Optional</div><div class="s">extension: root locus, gain choice, uncertainty</div></div>
+  <div class="lec opt"><div class="n">LECTURE <span class="z">10</span></div><div class="t">PID Control · Optional</div><div class="s">extension: controller implementation</div></div>
+</div>
+
+<div class="foot">Lecture 6 returns to the top of the chain in new domains — circuits, the
+mechanical–electrical analogy, the DC motor and the universal first-order model: that is the Act I /
+Act II seam. It also introduces state space alongside the transfer function. State space
+retains internal variables and nonzero initial states; the ODE and the Laplace equation with
+initial-condition terms can also describe those initial-state responses. Project 1 ends at the
+frequency-domain checkpoint in Lecture 5; Project 2 closes after core Class 8.</div>
+
+</div>
+</body></html>

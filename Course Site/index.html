@@ -181,12 +181,28 @@ body.video-open { overflow:hidden; }
 .assessment-table th { color:var(--teal); }
 .assessment-table td:last-child,.assessment-table th:last-child { text-align:right; white-space:nowrap; }
 .assessment-rule { max-width:85ch; color:var(--muted); }
+
+/* Enrichment reading */
+.learning-guides{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 28px;padding:14px 0;border-bottom:1px solid var(--line)}
+.learning-guides-label{font-size:12px;color:var(--muted);margin-right:4px;white-space:nowrap}
+.learning-guides>a{display:inline-flex;align-items:center;gap:14px;min-height:38px;padding:8px 13px;border:1px solid #36556d;border-radius:6px;background:#10243a;color:var(--text);font-size:13px;font-weight:600}
+.learning-guides>a:hover{border-color:var(--teal);background:#143148}
+@media(max-width:650px){.learning-guides{gap:8px;margin-bottom:20px;padding:10px 0 13px}.learning-guides-label{flex-basis:100%}.learning-guides>a{font-size:12px;padding:8px 11px}}
+</style>
+<style data-personal-course-brand>
+.brand-mark.personal-brand-mark,.personal-brand-mark{display:block!important;width:56px!important;height:56px!important;min-width:56px;flex:0 0 56px;padding:0!important;border:1px solid #b3c6d2;border-radius:10px;background:#fff!important;overflow:hidden;line-height:0}
+.personal-brand-mark img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;background:#fff}
+.course-brand>.personal-brand-mark{margin-right:0}
+header.personal-logo-header{position:relative;padding-right:108px}
+.personal-owner-logo{position:absolute;right:26px;top:26px}
+@media(max-width:650px){.brand-mark.personal-brand-mark,.personal-brand-mark{width:48px!important;height:48px!important;min-width:48px;flex-basis:48px}.brand,.course-brand{min-width:0}.brand>span:last-child,.course-brand>span:last-child{min-width:0}.personal-owner-logo{right:18px;top:22px}header.personal-logo-header{padding-right:86px}}
+@media print{.personal-brand-mark{break-inside:avoid}}
 </style>
 </head>
 <body data-edition="student">
   <a class="skip-link" href="#weeks">Skip to weekly materials</a>
   <header class="topbar">
-    <a class="brand" href="#top" aria-label="MECH321 home"><span class="brand-mark" aria-hidden="true">DS</span><span><strong>MECH321 Dynamics of Engineering Systems</strong><small>Student edition · PDF course materials</small></span></a>
+    <a class="brand" href="#top" aria-label="MECH321 home"><span class="brand-mark personal-brand-mark"><img src="assets/zpan-robot.jpeg" alt="Professor Stephen Pan · welding robot logo" width="56" height="56"></span><span><strong>MECH321 Dynamics of Engineering Systems</strong><small>Student edition · PDF course materials</small></span></a>
     <nav aria-label="Course sections"><a href="#weeks">Weekly content</a><a href="#demonstrations">Dynamic System Explorer</a><a href="#projects">Projects</a><a href="#resources">Student resources</a></nav>
   </header>
   <main id="top">
@@ -194,6 +210,7 @@ body.video-open { overflow:hidden; }
       <h1 id="course-title" class="visually-hidden">MECH321 Dynamics of Engineering Systems · TYUT 2026</h1>
       <figure class="intro-visual"><img src="mech321-home-cover.png" width="1916" height="821" fetchpriority="high" alt="MECH321 Dynamics of Engineering Systems, TYUT 2026. A dark blue pole-zero landscape with glowing red poles and cyan zeros."></figure>
     </section>
+    <nav class="learning-guides" aria-label="Enrichment reading"><span class="learning-guides-label">Enrichment reading</span><a href="intro.html">From a Pendulum to System Analysis ↗</a><a href="demonstrations/lti.html">LTI Systems ↗</a></nav>
     <section id="weeks" class="section-block" aria-labelledby="weeks-title">
       <div class="section-heading"><div><p class="section-kicker">Teaching sequence</p><h2 id="weeks-title">Weekly content</h2></div><p>Student edition: each class links to lecture slides, tutorial questions and home reading as PDF files. Classes 9–10 are optional extensions.</p></div>
       <div class="week-grid">
@@ -244,10 +261,9 @@ body.video-open { overflow:hidden; }
     <section id="resources" class="section-block resources-block" aria-labelledby="resources-title">
       <div><p class="section-kicker">Documents</p><h2 id="resources-title">Student resources</h2></div>
       <div class="resource-grid">
-        <a href="student-learning-guide.html"><b>Student learning guide</b><span>How to prepare before class and use the weekly materials</span></a>
-        <a href="../Project/MECH321%20Python%20Installation%20and%20Setup%20Guide.pdf"><b>Optional Python setup guide</b><span>PDF · alternative tools; projects use MATLAB</span></a>
+        <a href="MECH321%20From%20ODE%20to%20Controller.html"><b>From ODE to Controller</b><span>Course map · models, transfer functions, response and feedback</span></a>
         <a href="../Lecture/Laplace%20Transform%20Table.pdf"><b>Laplace transform table</b><span>PDF · forward and inverse pairs, properties and conditions</span></a>
-        <a href="../Assessment/Practice%20Exam.pdf"><b>Practice Exam</b><span>PDF · Lectures 1–8 · questions only</span></a><a href="../Project/Project%201/MATLAB%20Starter%20Guide%20Project%201%20Task%201.2.pdf"><b>MATLAB starter guide</b><span>Project 1 · Stage 1 Questions 6–7</span></a><a href="../Code/Lecture%20MATLAB%20examples.zip" download><b>MATLAB lecture examples</b><span>10 worked demonstrations · scripts ZIP</span></a>
+        <a href="../Assessment/Practice%20Exam.pdf"><b>Practice Exam</b><span>PDF · Lectures 1–8 · questions only</span></a><a href="../Project/Project%201/MATLAB%20Starter%20Guide%20Project%201%20Task%201.2.pdf"><b>MATLAB starter guide</b><span>Project 1 · Stage 1 Questions 6–7</span></a>
       </div>
     </section>
   </main>

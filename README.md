@@ -1,7 +1,7 @@
 # MECH321 TYUT 2026 Student Resources
 
-Student website, lecture PDFs, Home Reading guides, Tutorial questions, Practice Exam, Project briefs and supplied starter programs.
+Student lecture PDFs, Tutorial questions, Home Reading, Projects with required MATLAB starters, Practice Exam questions, course map, enrichment reading and interactive explorers.
 
-Open the published website to browse materials. Each project ZIP contains its brief and required MATLAB files together. Lectures and Tutorials 9–10 are optional.
+Website: https://golfapan.github.io/mech321-tyut-2026/
 
-Full textbooks, instructor solutions and internal course-development files are excluded. Textbook reading references remain in the Home Reading guides.
+Lectures and Tutorials 9–10 are optional. Each Project ZIP includes the current brief and required MATLAB files. Full textbooks, instructor solutions, original Office files, generic lecture code and Python installation support are excluded.
