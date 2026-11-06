@@ -576,7 +576,7 @@ function updateBuilder() {
     };
     point = calculate(omega); samples = logSamples(.01, 100, 320, calculate);
     transferMarkup = `<i>G</i>(<i>s</i>) = <span class="fraction"><b>${k.toFixed(2)} × ${wn.toFixed(2)}<sup>2</sup></b><b><i>s</i><sup>2</sup> + 2(${zeta.toFixed(2)})(${wn.toFixed(2)})<i>s</i> + ${wn.toFixed(2)}<sup>2</sup></b></span>`;
-    substitutionMarkup = `<i>s</i> = j${omega.toFixed(2)}<br><i>G</i>(j<i>ω</i>) = K<i>ω</i><sub>n</sub><sup>2</sup>/[(<i>ω</i><sub>n</sub><sup>2</sup>−<i>ω</i><sup>2</sup>) + j2<i>ζω</i><sub>n</sub><i>ω</i>]`;
+    substitutionMarkup = `<i>s</i> = j${omega.toFixed(2)}<br><i>G</i>(j<i>ω</i>) = K<i>ω</i><span class="math-scripts"><sub>n</sub><sup>2</sup></span>/[(<i>ω</i><span class="math-scripts"><sub>n</sub><sup>2</sup></span>−<i>ω</i><sup>2</sup>) + j2<i>ζω</i><sub>n</sub><i>ω</i>]`;
   }
   const magnitude = Math.hypot(point.re, point.im), sign = point.im < 0 ? '−' : '+';
   $('#b-transfer').innerHTML = transferMarkup;

@@ -7,7 +7,7 @@
   <title>System Demonstrations · MECH321 TYUT 2026</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%2308172d'/%3E%3Cpath d='M10 40c10-25 15 14 24-12s12 20 20-7' fill='none' stroke='%235de0ce' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="demo.css">
-</head>
+<link rel="stylesheet" data-course-math href="../assets/math.css?v=20261106-math"></head>
 <body>
   <a class="skip-link" href="#workspace">Skip to demonstration</a>
   <header class="topbar">
@@ -98,7 +98,7 @@
 
     <section id="zero-panel" class="system-panel" role="tabpanel" aria-labelledby="zero-tab" hidden>
       <div class="model-bar">
-        <div><span>POLES FIXED · ZERO MOVES</span><div class="equation" id="z-transfer"><i>G</i><sub>z</sub>(<i>s</i>) = <span class="fraction"><b><i>Kω</i><sub>n</sub><sup>2</sup>(1 + <i>s</i>/<i>z</i>)</b><b><i>s</i><sup>2</sup> + 2<i>ζω</i><sub>n</sub><i>s</i> + <i>ω</i><sub>n</sub><sup>2</sup></b></span></div></div>
+        <div><span>POLES FIXED · ZERO MOVES</span><div class="equation" id="z-transfer"><i>G</i><sub>z</sub>(<i>s</i>) = <span class="fraction"><b><i>Kω</i><span class="math-scripts"><sub>n</sub><sup>2</sup></span>(1 + <i>s</i>/<i>z</i>)</b><b><i>s</i><sup>2</sup> + 2<i>ζω</i><sub>n</sub><i>s</i> + <i>ω</i><span class="math-scripts"><sub>n</sub><sup>2</sup></span></b></span></div></div>
         <p id="z-model-note">The poles and DC gain stay fixed. A left-half-plane zero changes the modal weights and can increase overshoot.</p>
       </div>
       <div class="zero-layout">
@@ -195,6 +195,6 @@
     </section>
   </main>
   <footer><span>MECH321 · Dynamics of Engineering Systems</span><span>Interactive demonstrations · Works offline</span></footer>
-  <script src="demo.js"></script>
+  <script src="demo.js?v=20261106-math"></script>
 </body>
 </html>

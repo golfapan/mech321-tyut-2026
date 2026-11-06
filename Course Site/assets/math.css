@@ -1,0 +1,21 @@
+/* Shared course mathematics. Text and scripts remain in normal inline flow. */
+sub,sup{font-size:.72em;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.48em}sub{bottom:-.22em}
+.math-scripts{display:inline-grid;grid-template-rows:1fr 1fr;vertical-align:-.4em;font-size:.72em;line-height:1;margin-left:.03em}
+.math-scripts>sup,.math-scripts>sub{position:static;grid-column:1;font-size:inherit;line-height:1;padding:0;vertical-align:baseline}
+.math-scripts>sup{grid-row:1}.math-scripts>sub{grid-row:2}
+.equation,.eq,.math{font-family:"Cambria Math","STIX Two Math",Georgia,serif;letter-spacing:normal;word-spacing:normal;font-weight:400;line-height:1.55}
+/* Flex made each italic variable, exponent and fraction a separate item. */
+.equation{display:block}
+.bridge-page .equation{line-height:1.6;overflow-wrap:normal;overflow-x:auto}
+.eq{line-height:1.6;padding-block:14px}
+.math small,.equation small,.eq small{line-height:1.5}
+.frac,.fraction{display:inline-flex;flex-direction:column;vertical-align:middle;line-height:1.18;text-align:center;margin-inline:.12em;white-space:nowrap;font-weight:400}
+.frac>span,.fraction>b{display:block;font-weight:400;padding:.1em .23em}
+.frac>span:first-child,.fraction>b:first-child{border-bottom:1px solid currentColor}
+.prose{line-height:1.55}
+.prose math{font-family:"Cambria Math","STIX Two Math",serif;font-size:1em;white-space:normal;letter-spacing:normal;word-spacing:normal}
+.prose p.equation:has(>math:only-child){margin:18px 0 22px;line-height:1.5}
+.prose .equation{line-height:1.5;font-family:inherit;font-weight:inherit}
+.prose math mo[accent="true"]{padding:0}
+@media(max-width:650px){.eq{line-height:1.6}.math{line-height:1.55}}
