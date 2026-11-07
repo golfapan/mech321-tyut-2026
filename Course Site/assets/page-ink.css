@@ -1,0 +1,73 @@
+/* Shared Ink Mode controls for course pages and web lectures. */
+.ink-canvas { position: fixed; inset: 0; z-index: 900; display: block; pointer-events: none; }
+body.ink-mode .ink-canvas { pointer-events: auto; cursor: crosshair; touch-action: pan-y pinch-zoom; }
+body.ink-mode .ink-canvas.is-eraser { cursor: cell; }
+.ink-launcher {
+  position: fixed; right: 22px; bottom: 22px; z-index: 940; min-width: 74px; min-height: 50px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 15px;
+  border: 1px solid rgba(8,77,74,.2); border-radius: 999px; background: #087f78; color: #fff;
+  box-shadow: 0 14px 34px rgba(25,65,70,.25); font: 750 .86rem/1.2 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer;
+}
+.ink-launcher span { font-size: 1.25rem; line-height: 1; }
+.ink-launcher.is-active { background: #143e55; }
+.ink-toolbar {
+  position: fixed; left: 50%; bottom: 20px; z-index: 950; min-height: 58px; max-width: calc(100vw - 220px);
+  display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid rgba(25,65,70,.18);
+  border-radius: 16px; background: rgba(255,255,255,.96); box-shadow: 0 18px 50px rgba(18,48,53,.22);
+  backdrop-filter: blur(18px); transform: translate(-50%, calc(100% + 40px)); opacity: 0; pointer-events: none;
+  transition: transform 180ms ease, opacity 180ms ease; color: #17373d;
+}
+body.ink-mode .ink-toolbar { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.ink-toolbar__mode { display: grid; min-width: 132px; padding: 0 8px; line-height: 1.12; }
+.ink-toolbar__mode strong { font-size: .82rem; color: #17373d; }
+.ink-toolbar__mode span { margin-top: 3px; color: #667b7f; font-size: .66rem; white-space: nowrap; }
+.ink-tool-group, .ink-colours { display: flex; align-items: center; gap: 4px; padding-left: 8px; border-left: 1px solid rgba(25,65,70,.14); }
+.ink-toolbar button, .ink-more summary {
+  min-height: 42px; padding: 0 11px; display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 10px; background: transparent; color: #38565c;
+  font: 750 .76rem/1.2 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; white-space: nowrap; cursor: pointer;
+}
+.ink-toolbar button:hover, .ink-more summary:hover { background: #edf4f2; }
+.ink-toolbar button.is-active, .ink-toolbar button[aria-pressed="true"] { background: #dbece8; color: #075f5a; }
+.ink-toolbar button:disabled { opacity: .35; cursor: default; }
+.ink-toolbar .ink-colour { width: 32px; min-width: 32px; min-height: 32px; padding: 0; border: 3px solid #fff; border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px rgba(25,65,70,.2); }
+.ink-toolbar .ink-colour.is-active { box-shadow: 0 0 0 3px #86bbb5; }
+.ink-more { position: relative; }
+.ink-more summary { list-style: none; }
+.ink-more summary::-webkit-details-marker { display: none; }
+.ink-more > div { position: absolute; right: 0; bottom: calc(100% + 12px); min-width: 154px; display: grid; gap: 3px; padding: 7px; border: 1px solid rgba(25,65,70,.16); border-radius: 12px; background: #fff; box-shadow: 0 15px 40px rgba(18,48,53,.2); }
+.ink-more > div button { justify-content: flex-start; }
+.ink-toolbar .ink-danger { color: #b42318; }
+.ink-toolbar .ink-done { background: #087f78; color: #fff; }
+.ink-toolbar .ink-done:hover { background: #066b65; }
+.ink-import { display: none; }
+.ink-status { position: fixed; left: 50%; bottom: 96px; z-index: 960; padding: 8px 13px; border-radius: 999px; background: #143e55; color: #fff; font: 750 .75rem/1.2 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-shadow: 0 10px 30px rgba(18,48,53,.22); opacity: 0; transform: translate(-50%, 8px); pointer-events: none; transition: opacity 140ms ease, transform 140ms ease; }
+.ink-status.is-visible { opacity: 1; transform: translate(-50%, 0); }
+body.ink-mode .open-status { bottom: 100px; }
+@media (max-width: 1040px) {
+  .ink-toolbar { left: 12px; right: 12px; bottom: 12px; max-width: none; overflow-x: auto; transform: translateY(calc(100% + 30px)); scrollbar-width: none; }
+  .ink-toolbar::-webkit-scrollbar { display: none; }
+  body.ink-mode .ink-toolbar { transform: translateY(0); }
+  .ink-toolbar__mode { display: none; }
+  .ink-launcher { right: 14px; bottom: 82px; min-width: 56px; min-height: 46px; padding-inline: 12px; }
+  .ink-launcher b { display: none; }
+  .ink-status { bottom: 86px; }
+}
+@media (max-width: 620px) {
+  .ink-toolbar { padding: 6px; border-radius: 14px; }
+  .ink-toolbar button, .ink-more summary { min-height: 40px; padding-inline: 9px; }
+  .ink-tool-group, .ink-colours { padding-left: 5px; }
+  .ink-toolbar .ink-colour { width: 28px; min-width: 28px; min-height: 28px; }
+}
+
+/* Stay above classroom controls, including expanded frame workspaces. */
+.ink-canvas{z-index:2100}.ink-launcher{z-index:2140}.ink-toolbar{z-index:2150}.ink-status{z-index:2160}
+.ink-launcher:hover{background:#066b65;color:white}.ink-toolbar .ink-colour:hover{background:var(--swatch)}
+.ink-toolbar .ink-more[open]{overflow:visible}
+@media(max-width:1040px){.ink-toolbar{overflow:visible;flex-wrap:wrap;gap:4px}.ink-more>div{right:0;bottom:calc(100% + 10px)}.ink-toolbar .ink-colours{gap:3px}.ink-launcher{bottom:146px}.ink-status{bottom:146px}}
+@media print{.ink-toolbar,.ink-launcher,.ink-status{display:none!important}}
+
+/* Teacher pages use the existing dark course palette. */
+.ink-toolbar{background:rgba(15,35,53,.98);border-color:#42617b;color:#edf6fc}.ink-toolbar__mode strong,.ink-toolbar button,.ink-more summary{color:#edf6fc}.ink-toolbar__mode span{color:#abc0ce}.ink-toolbar button:hover,.ink-more summary:hover{background:#24445b}.ink-toolbar button.is-active,.ink-toolbar button[aria-pressed="true"]{background:#24544e;color:#b9fff1}.ink-more>div{background:#10263c;border-color:#42617b}.ink-toolbar .ink-danger{color:#ff9d98}.ink-toolbar .ink-colour{border-color:#10263c}.ink-launcher{box-sizing:border-box}.ink-toolbar,.ink-toolbar *{box-sizing:border-box}.ink-toolbar .ink-colour:hover{background:var(--swatch)}body.ink-mode .ink-canvas{touch-action:pinch-zoom}.ink-toolbar .ink-colour[aria-label="White"]{background:white}.ink-toolbar:focus-visible{outline:3px solid #ffbf69}@media(prefers-reduced-motion:reduce){.ink-toolbar,.ink-status{transition:none}}
+
+.ink-toolbar{width:max-content}@media(max-width:1280px){.ink-toolbar__mode{display:none}}@media(max-width:1040px){.ink-toolbar{width:auto}}
